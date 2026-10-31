@@ -1,0 +1,13 @@
+# EAS archives this Git repository; upload only the mobile app.
+/*
+!/form-mobile
+/form-mobile/node_modules
+/form-mobile/.expo
+/form-mobile/dist
+/form-mobile/android
+/form-mobile/ios
+**/.env
+**/.env.*
+**/*.keystore
+**/*.jks
+**/credentials.json

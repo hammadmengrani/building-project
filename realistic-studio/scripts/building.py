@@ -8,12 +8,22 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from geometry import walls, owners, edges, validate
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from site_geometry import add_stairs, add_site
+from interior_details import add_finishing
+from detail_assets import add_detail_furniture, curtain_panel
+from services_geometry import add_electrical, add_plumbing
+from construction_geometry import add_construction
+from construction import construction_plan
+from materials import resolve_materials
+from procedural_materials import ensure_maps
+from services import electrical_plan, plumbing_plan
 p = argparse.ArgumentParser()
 p.add_argument('--scene', required=True)
 p.add_argument('--out', required=True)
 p.add_argument('--edits')
 p.add_argument('--presentation')
 p.add_argument('--render', action='store_true')
+p.add_argument('--samples', type=int, choices=[16,32,48,64,128], default=48)
+p.add_argument('--only-view', choices=['exterior','interior','cutaway'])
 p.add_argument('--view', default='exterior', choices=['exterior', 'interior', 'cutaway'])
 a = p.parse_args(sys.argv[sys.argv.index('--') + 1:])
 scene = json.loads(Path(a.scene).read_text())
@@ -63,15 +73,17 @@ def build(view):
             for li in face.loop_indices:
                 co = o.data.vertices[o.data.loops[li].vertex_index].co
                 coords = (co.y, co.z) if axis == 0 else (co.x, co.z) if axis == 1 else (co.x, co.y)
-                uv.data[li].uv = coords
+                repeat = o.data.materials[0].get('repeat_m', 1.0) if o.data.materials else 1.0
+                uv.data[li].uv = (coords[0]/repeat, coords[1]/repeat)
 
-    def mat(rgb, metal=0, rough=0.6, alpha=1, finish=None):
+    def mat(rgb, metal=0, rough=0.6, alpha=1, finish=None, repeat_m=1.0):
         values = tuple((rgb[k] for k in ('r', 'g', 'b'))) if isinstance(rgb, dict) else tuple(rgb)
-        key = (*values, metal, rough, alpha, finish)
+        key = (*values, metal, rough, alpha, finish, repeat_m)
         if key in cache:
             return cache[key]
         m = bpy.data.materials.new('Material ' + str(len(cache)))
         m.use_nodes = True
+        m['repeat_m'] = repeat_m
         m.diffuse_color = (*values, alpha)
         n = m.node_tree.nodes.get('Principled BSDF')
         n.inputs['Base Color'].default_value = (*values, 1)
@@ -84,10 +96,11 @@ def build(view):
             else:
                 m.blend_method = 'BLEND'
         if finish:
+            generated = ensure_maps(ASSETS, finish[2:], rough) if finish.startswith('p_') else None
             nodes = m.node_tree.nodes
             links = m.node_tree.links
             for channel, socket in [('color', 'Base Color'), ('roughness', 'Roughness'), ('normal', 'Normal')]:
-                file = ASSETS / (finish + '_' + channel + '.png')
+                file = generated[channel] if generated else ASSETS / (finish + '_' + channel + '.png')
                 tex = nodes.new('ShaderNodeTexImage')
                 tex.image = bpy.data.images.load(str(file), check_existing=True)
                 if channel != 'color':
@@ -126,7 +139,10 @@ def build(view):
             n.inputs['IOR'].default_value = 1.45
         cache[key] = m
         return m
-    wall = mat(scene['wall_color'], finish='plaster')
+    def surface(spec):
+        return mat(spec['color'], rough=spec['roughness'], finish=None if spec['finish']=='plain' else 'p_'+spec['finish'], repeat_m=spec['repeat_m'])
+
+    wall = mat(scene['wall_color'], finish='p_plaster', rough=0.9)
     accent = mat(scene['accent_color'], finish='wood')
     roofmat = mat(scene['roof_color'], finish='stone')
     concrete = mat((0.65, 0.65, 0.6), finish='stone')
@@ -198,7 +214,7 @@ def build(view):
             if r['id'] != 'vertical_core' or level == 0:
                 box('Foundation ' + r['id'], (w + 0.12, d + 0.12, 0.25), (x + w / 2, y + d / 2, BASE - 0.125), concrete)
             if r['id'] != 'vertical_core':
-                box('Floor ' + r['id'], (w - 0.08, d - 0.08, 0.035), (x + w / 2, y + d / 2, BASE + 0.0175), mat(r['floor_color'], finish='wood' if r.get('kind') == 'bedroom' or 'bed' in r['name'].lower() else 'tile'))
+                box('Floor ' + r['id'], (w - 0.08, d - 0.08, 0.035), (x + w / 2, y + d / 2, BASE + 0.0175), surface(resolve_materials(MASTER, r)['floor']))
             if view == 'exterior' and level == MASTER.get('storeys', 1) - 1:
                 entity('roof:' + r['id'], 'Roof', (x + w / 2, y + d / 2, BASE + h))
                 box('Roof ' + r['id'], (w + 0.22, d + 0.22, 0.17), (x + w / 2, y + d / 2, BASE + h + 0.07), roofmat, True)
@@ -215,7 +231,9 @@ def build(view):
             size = (hi - lo, 0.18, top - bottom) if axis == 'x' else (0.18, hi - lo, top - bottom)
             pos = ((lo + hi) / 2, fixed, BASE + (bottom + top) / 2) if axis == 'x' else (fixed, (lo + hi) / 2, BASE + (bottom + top) / 2)
             entity('wall:' + ':'.join((str(round(v, 3)) for v in (fixed, lo, hi, bottom))) + axis, 'Wall', ((lo + hi) / 2, fixed, BASE + bottom) if axis == 'x' else (fixed, (lo + hi) / 2, BASE + bottom))
-            box('Wall', size, pos, wall, True)
+            adjacent = next((r for r in scene['rooms'] if any(aa==axis and abs(ff-fixed)<0.025 and ll<=((lo+hi)/2)<=hh for aa,ff,ll,hh in edges(r))),None)
+            wall_material = surface(resolve_materials(MASTER,adjacent)['wall']) if adjacent else wall
+            box('Wall', size, pos, wall_material, True)
         for o in scene['openings']:
             if view == 'cutaway':
                 continue
@@ -248,7 +266,23 @@ def build(view):
                     sign = 1 if r is None or abs(x - r['x']) < 0.025 else -1
                     pos = (x + sign * (w - 0.08) / 2, y - w / 2 + 0.03, BASE + h / 2)
                     size = (w - 0.08, 0.045, h - 0.08)
-                box(o['id'] + ' open door', size, pos, wood, True)
+                doorwood = surface(resolve_materials(MASTER,r)['wood']) if r else wood
+                box(o['id'] + ' open door', size, pos, doorwood, True)
+                for zz in (BASE+h*0.28,BASE+h*0.72):
+                    panel_pos=(pos[0]+0.026,pos[1],zz) if axis=='x' else (pos[0],pos[1]+0.026,zz)
+                    panel_size=(0.012,(w-0.08)*0.78,h*0.32) if axis=='x' else ((w-0.08)*0.78,0.012,h*0.32)
+                    box('Raised timber door panel',panel_size,panel_pos,doorwood,True)
+                for zz in (BASE+0.3,BASE+h/2,BASE+h-0.3):
+                    hinge=(x-w/2+0.03,y,zz) if axis=='x' else (x,y-w/2+0.03,zz)
+                    cylinder('Door hinge barrel',(0.018,0.018,0.09),hinge,dark)
+                # Architraves on both wall faces, around the actual cut opening.
+                for face in (-1,1):
+                    for side in (-1,1):
+                        pp=(x+side*(w/2+0.025),y+face*0.105,BASE+h/2) if axis=='x' else (x+face*0.105,y+side*(w/2+0.025),BASE+h/2)
+                        sz=(0.055,0.025,h+0.08) if axis=='x' else (0.025,0.055,h+0.08)
+                        box('Door architrave',sz,pp,white,True)
+                    pp=(x,y+face*0.105,BASE+h+0.025) if axis=='x' else (x+face*0.105,y,BASE+h+0.025)
+                    box('Door architrave header',(w+0.1,0.025,0.055) if axis=='x' else (0.025,w+0.1,0.055),pp,white,True)
                 handle = list(pos)
                 handle[2] = BASE + 1.05
                 if axis == 'x':
@@ -290,8 +324,18 @@ def build(view):
         for f in scene['furniture']:
             entity('furniture:' + f['id'], 'Furniture', (f['x'], f['y'], BASE))
             x, y, w, d, h, angle = (f['x'], f['y'], f['width'], f['depth'], f['height'], math.radians(f['rotation_deg']))
-            color = mat(f['color'], finish='fabric' if f['kind'] in ('sofa', 'bed') else 'wood' if f['kind'] in ('table', 'wardrobe') else None)
+            color = mat(f['color'])
             kind = f['kind']
+            room = next(r for r in scene['rooms'] if r['id'] == f['room_id'])
+            style = room.get('interior_style', MASTER.get('interior_style', 'modern'))
+            variant = f.get('design_variant', 0)
+            specs = resolve_materials(MASTER, room)
+            furniture_wood = surface(specs['wood'])
+            fabric = surface(specs['upholstery'])
+            counter = surface(specs['stone'])
+            if kind in ('bed','sofa','chair','bench'): color = fabric
+            elif kind in ('wardrobe','table'): color = furniture_wood
+            furniture_frame = dark if style == 'industrial' else furniture_wood
 
             def part(label, size, offset, ma=color, rounding=True, shape='box'):
                 dx, dy, z = offset
@@ -299,7 +343,10 @@ def build(view):
                 if shape == 'cylinder':
                     return cylinder(f['id'] + ' ' + label, size, pos, ma, angle)
                 return box(f['id'] + ' ' + label, size, pos, ma, rounding, angle)
-            if kind == 'treadmill':
+            detailed = add_detail_furniture(kind, f, BASE, part, tag, fabric, furniture_wood, furniture_frame, white, dark)
+            if detailed:
+                pass
+            elif kind == 'treadmill':
                 part('running deck', (w, d, 0.16), (0, 0, 0.14), dark)
                 part('running belt', (w * 0.8, d * 0.8, 0.025), (0, -d * 0.03, 0.235), dark)
                 for dx in (-w * 0.42, w * 0.42):
@@ -329,33 +376,64 @@ def build(view):
                 part('car body', (w, d, h * 0.45), (0, 0, h * 0.3), color)
                 part('car cabin', (w * 0.85, d * 0.5, h * 0.4), (0, 0, h * 0.65), glass)
             elif kind == 'bed':
-                part('frame', (w, d, h * 0.38), (0, 0, h * 0.19), wood)
+                part('frame', (w, d, h * (0.20 if style == 'minimalist' else 0.38)), (0, 0, h * (0.10 if style == 'minimalist' else 0.19)), furniture_frame)
                 part('mattress', (w * 0.98, d * 0.96, h * 0.32), (0, 0, h * 0.54), white)
                 part('duvet', (w, d * 0.7, h * 0.12), (0, -d * 0.13, h * 0.76))
                 for dx in (-w * 0.24, w * 0.24):
                     part('pillow', (w * 0.4, d * 0.2, h * 0.12), (dx, d * 0.32, h * 0.8), white)
-                part('headboard', (w, d * 0.055, h), (0, d * 0.46, h / 2), wood)
+                part('headboard', (w, d * 0.055, h), (0, d * 0.46, h / 2), furniture_wood)
+                for dx in (-w*0.22, 0, w*0.22):
+                    part('upholstered headboard panel',(w*0.21,d*0.025,h*0.64),(dx,d*0.425,h*0.6))
+                part('folded bed runner',(w*0.99,d*0.19,0.035),(0,-d*0.28,h*0.84),fabric)
+                for dx in (-w*0.4,w*0.4):
+                    for dy in (-d*0.4,d*0.4):
+                        part('bed foot',(0.06,0.06,0.09),(dx,dy,0.045),dark)
             elif kind == 'sofa':
                 part('base', (w, d, h * 0.4), (0, 0, h * 0.25))
-                part('back', (w * 0.18, d, h), (w * 0.4, 0, h / 2))
+                part('back', (w * 0.18, d, h*(0.72 if style=='minimalist' else 1.0)), (w * 0.4, 0, h*(0.36 if style=='minimalist' else 0.5)))
                 for dy in (-d * 0.32, d * 0.32):
                     part('arm', (w, d * 0.1, h * 0.75), (0, dy * 1.4, h * 0.375))
-                for dy in (-d * 0.25, d * 0.05, d * 0.3):
-                    part('cushion', (w * 0.75, d * 0.25, h * 0.13), (-w * 0.04, dy, h * 0.53), white)
+                seat_count = 2 if variant == 1 else 3
+                for dy in [(-0.3+0.6*i/max(1,seat_count-1))*d for i in range(seat_count)]:
+                    part('cushion', (w * 0.75, d * (0.38 if variant == 1 else 0.25), h * 0.13), (-w * 0.04, dy, h * 0.53), fabric)
+                for dy in (-d*0.22,d*0.22):
+                    part('scatter pillow',(w*0.22,d*0.22,h*0.32),(w*0.14,dy,h*0.68),fabric)
+                for dy in (-d*0.37,d*0.37):
+                    part('sofa foot',(w*0.7,0.06,0.09),(0,dy,0.045),dark)
             elif kind in ('table', 'chair'):
-                part('top', (w, d, 0.08), (0, 0, h - 0.04))
+                part('top', (w, d, 0.08), (0, 0, h - 0.04), furniture_wood, shape='cylinder' if kind == 'table' and style == 'modern' and variant == 1 else 'box')
                 for dx in (-w * 0.38, w * 0.38):
                     for dy in (-d * 0.38, d * 0.38):
-                        part('leg', (0.055, 0.055, h - 0.08), (dx, dy, (h - 0.08) / 2), wood)
+                        part('leg', (0.04 if style == 'industrial' else 0.065, 0.04 if style == 'industrial' else 0.065, h - 0.08), (dx, dy, (h - 0.08) / 2), furniture_frame)
                 if kind == 'chair':
                     part('back', (w, 0.06, h * 0.6), (0, d * 0.42, h * 0.72))
             elif kind == 'kitchen':
-                part('cabinets', (w, d, h * 0.92), (0, 0, h * 0.46), wood)
-                part('counter', (w, d, 0.05), (0, 0, h - 0.025), color)
-                for dx in (-w * 0.22, w * 0.22):
-                    part('cooktop', (0.2, min(0.3, d * 0.5), 0.012), (dx, 0, h + 0.007), dark)
+                part('cabinets', (w, d, h * 0.92), (0, 0, h * 0.46), furniture_wood)
+                part('counter', (w, d, 0.05), (0, 0, h - 0.025), counter)
+                part('Induction hob',(w*0.55,d*0.78,0.012),(-w*0.2,0,h+0.012),dark)
+                for i in range(max(1,int(w/0.5))):
+                    panel=w/max(1,int(w/0.5))
+                    dx=-w/2+(i+0.5)*panel
+                    part('cabinet door',(panel-0.012,0.025,h*0.78),(dx,-d/2-0.008,h*0.46),furniture_wood)
+                    part('cabinet pull',(min(0.15,panel*0.6),0.035,0.025),(dx,-d/2-0.03,h*0.75),dark)
+                part('stone backsplash',(w,0.035,0.32),(0,d/2-0.02,h+0.16),counter)
+                part('Inset sink rim',(w*0.27,d*0.65,0.025),(w*0.29,0,h+0.015),white)
+                part('Sink well',(w*0.22,d*0.5,0.018),(w*0.29,0,h+0.03),dark)
+                part('Kitchen mixer stem',(0.035,0.035,0.23),(w*0.29,d*0.31,h+0.12),dark)
+                part('Kitchen mixer spout',(0.035,d*0.24,0.035),(w*0.29,d*0.2,h+0.22),dark)
+                for dx in (-w*0.30,-w*0.12):
+                    for dy in (-d*0.18,d*0.18):
+                        part('Cooktop burner',(0.14,0.14,0.012),(dx,dy,h+0.035),dark,shape='cylinder')
+                near_window = any(o['kind']=='window' and math.hypot(o['x']-x,o['y']-y)<w/2+0.8 for o in scene['openings'])
+                if not near_window:
+                    part('Upper cabinet carcass',(w,d*0.5,0.65),(0,d*0.23,h+1.0),furniture_wood)
+                    for dx in (-w*0.25,w*0.25):
+                        part('Upper cabinet door',(w*0.49,0.025,0.62),(dx,-d*0.03,h+1.0),furniture_wood)
+                        part('Upper cabinet pull',(0.025,0.035,0.16),(dx,-d*0.06,h+0.84),dark)
             elif kind == 'wardrobe':
                 part('body', (w, d, h), (0, 0, h / 2))
+                for dx in (-w*0.25,w*0.25):
+                    part('wardrobe door',(w*0.49,0.025,h*0.96),(dx,-d/2-0.005,h/2))
                 for dx in (-w * 0.06, w * 0.06):
                     part('handle', (0.025, 0.04, h * 0.18), (dx, -d / 2 - 0.008, h * 0.55), dark)
             elif kind == 'toilet':
@@ -366,9 +444,14 @@ def build(view):
                 part('vanity', (w, d, h * 0.85), (0, 0, h * 0.425), wood)
                 part('basin', (w, d, 0.09), (0, 0, h - 0.045), white)
                 part('tap', (0.04, 0.04, 0.13), (0, d * 0.3, h - 0.01), dark)
+                part('mirror frame',(w*0.9,0.025,0.65),(0,d/2-0.015,h+0.46),dark)
+                part('mirror glass',(w*0.84,0.015,0.59),(0,d/2-0.035,h+0.46),mat((0.72,0.79,0.8),metal=0.95,rough=0.07))
             elif kind == 'shower':
                 part('tray', (w, d, h), (0, 0, h / 2), white)
                 part('drain', (0.1, 0.1, 0.01), (0, 0, h + 0.005), dark)
+                part('shower screen',(0.018,d*0.95,1.95),(w/2-0.02,0,1.03),glass)
+                part('shower rail',(0.035,0.035,1.2),(0,d/2-0.08,1.35),dark)
+                part('rain shower head',(0.24,0.24,0.035),(0,d/2-0.18,2.02),dark)
             elif kind == 'plant':
                 part('pot', (w * 0.65, d * 0.65, h * 0.38), (0, 0, h * 0.19), concrete, shape='cylinder')
                 bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=1, location=(x, y, BASE + h * 0.7))
@@ -379,6 +462,36 @@ def build(view):
                 tag(o)
             else:
                 part(kind, (w, d, h), (0, 0, h / 2), shape='cylinder' if kind == 'cylinder' else 'box')
+            # Style-specific geometry stays inside the original furniture footprint.
+            if kind == 'bed' and style == 'traditional':
+                for dx in (-w*0.43,w*0.43):
+                    part('traditional bed post',(0.08,0.08,h*1.55),(dx,d*0.43,h*0.775),furniture_wood)
+                part('traditional headboard cap',(w*0.94,0.08,0.08),(0,d*0.43,h*1.25),furniture_wood)
+            if kind in ('bed','wardrobe') and style == 'coastal':
+                for index in range(7):
+                    dx=-w*0.42+index*w*0.14
+                    if kind == 'bed':
+                        part('coastal headboard slat',(w*0.055,0.04,h*0.85),(dx,d*0.41,h*0.72),furniture_wood)
+                    else:
+                        part('coastal wardrobe slat',(w*0.045,0.03,h*0.9),(dx,-d*0.48,h*0.5),furniture_wood)
+            if kind == 'wardrobe' and style == 'traditional':
+                for dx in (-w*0.25,w*0.25):
+                    part('traditional inset panel',(w*0.38,0.028,h*0.72),(dx,-d*0.49,h*0.5),furniture_wood)
+            if kind == 'sofa':
+                if style == 'industrial':
+                    for dy in (-d*0.4,d*0.4):
+                        part('exposed metal sofa frame',(w*0.9,0.035,h*0.23),(0,dy,h*0.15),dark)
+                elif style == 'traditional':
+                    for dy in (-d*0.39,d*0.39):
+                        roll = part('traditional rolled sofa arm',(0.16,0.16,w*0.8),(0,dy,h*0.70),fabric,shape='cylinder')
+                        roll.rotation_euler.y = math.pi/2
+                    for dy in (-d*0.39,d*0.39):
+                        part('timber sofa arm cap',(w*0.9,0.06,0.05),(0,dy,h*0.75),furniture_wood)
+                elif style == 'coastal':
+                    for index in range(5):
+                        part('coastal sofa back slat',(0.035,d*0.15,0.045),(w*0.43,(-0.34+index*0.17)*d,h*0.82),furniture_wood)
+                if variant == 2 and style != 'minimalist':
+                    part('sofa throw',(w*0.65,d*0.18,0.04),(-w*0.06,-d*0.12,h*0.62),mat((0.3,0.39,0.42),finish='fabric'))
         # Low exterior plinth, parapet coping and facade battens on exposed boundaries.
         for r in scene['rooms']:
             for axis, fixed, lo, hi in edges(r):
@@ -465,6 +578,30 @@ def build(view):
                 o.data.materials.append(dark)
                 bpy.ops.object.convert(target='MESH')
                 tag(o)
+        add_finishing(scene, BASE, entity, box, cylinder, mat, dark, white, view, lambda room: surface(resolve_materials(MASTER,room)['curtain']), lambda name,w,h,center,material,angle: curtain_panel(name,w,h,center,material,angle,tag))
+        if view != 'cutaway':
+            ceiling_mat = mat((0.86,0.85,0.81), rough=0.93, finish='p_plaster')
+            for room in scene['rooms']:
+                if room['id'] == 'vertical_core': continue
+                entity('ceiling:' + room['id'], 'Ceiling')
+                obj = box('Plaster ceiling', (room['width']-0.1,room['depth']-0.1,0.06), (room['x']+room['width']/2,room['y']+room['depth']/2,BASE+room['height']+0.025), ceiling_mat)
+                obj.hide_render = a.render and not PRESENTATION.get('ceilings',False)
+        if a.render and view != 'exterior':
+            for room in scene['rooms']:
+                if room['id'] == 'vertical_core':
+                    continue
+                lamp = bpy.data.lights.new('Warm interior light ' + room['id'], 'AREA')
+                lamp.energy = min(650, room['width'] * room['depth'] * 12)
+                lamp.color = (1.0, 0.84, 0.67)
+                lamp.shape = 'DISK'
+                lamp.size = min(1.0, room['width'] * 0.3)
+                obj = bpy.data.objects.new(lamp.name, lamp)
+                bpy.context.collection.objects.link(obj)
+                obj.location = (room['x']+room['width']/2, room['y']+room['depth']/2, BASE+room['height']-0.14)
+        if not a.render or PRESENTATION.get('electrical'):
+            add_electrical(scene, BASE, entity, box, cylinder, mat)
+            add_plumbing(scene, BASE, entity, box, cylinder, mat, level, MASTER.get('storeys',1))
+            add_construction(MASTER, BASE, level, entity, box, cylinder, mat)
         add_stairs(MASTER.get('vertical_core'), BASE, level, MASTER.get('storeys', 1), entity, box, cylinder, concrete, dark, glass)
     # Stable named entity roots make editing deterministic across all three views.
     groups = {}
@@ -527,11 +664,37 @@ def build(view):
     result = bpy.ops.export_scene.gltf(filepath=str(out / (view + '.glb')), export_format='GLB', export_apply=True, export_extras=True, export_cameras=False, export_lights=False)
     if 'FINISHED' not in result:
         raise RuntimeError('GLB export failed')
+    # Native viewers cannot apply the web UI's category visibility filters.
+    # Export a finished-architecture-only model, with metre-scale glTF bounds.
+    excluded = ('Electrical', 'Plumbing', 'Structure', 'Rebar', 'Formwork', 'Ceiling', 'Label')
+    bpy.ops.object.select_all(action='DESELECT')
+    points = []
+    for root in groups.values():
+        category = str(root.get('category', root.get('_category', '')))
+        if category.startswith(excluded):
+            continue
+        root.select_set(True)
+        for child in root.children_recursive:
+            child.select_set(True)
+            if child.type == 'MESH':
+                points.extend(child.matrix_world @ Vector(corner) for corner in child.bound_box)
+    if points:
+        low = [min(p[i] for p in points) for i in range(3)]
+        high = [max(p[i] for p in points) for i in range(3)]
+        filename = 'mobile-' + view + '.glb'
+        result = bpy.ops.export_scene.gltf(filepath=str(out / filename), export_format='GLB', use_selection=True, export_apply=True, export_extras=False, export_cameras=False, export_lights=False)
+        if 'FINISHED' not in result:
+            raise RuntimeError('Mobile GLB export failed')
+        manifest_path = out / 'mobile-manifest.json'
+        manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {'version': 1, 'units': 'metres', 'views': {}}
+        manifest['views'][view] = {'file': filename, 'bytes': (out / filename).stat().st_size, 'bounds': {'min': [low[0], low[2], -high[1]], 'max': [high[0], high[2], -low[1]]}}
+        manifest_path.write_text(json.dumps(manifest, indent=2))
+
 
 def setup_lighting(view):
     sc = bpy.context.scene
     sc.render.engine = 'CYCLES'
-    sc.cycles.samples = 48
+    sc.cycles.samples = a.samples
     sc.cycles.use_denoising = True
     sc.render.resolution_x = 1200
     sc.render.resolution_y = 900
@@ -541,11 +704,11 @@ def setup_lighting(view):
     nodes = sc.world.node_tree.nodes
     links = sc.world.node_tree.links
     nodes.get('Background').inputs['Color'].default_value = (0.52, 0.62, 0.78, 1)
-    nodes.get('Background').inputs['Strength'].default_value = 0.7
+    nodes.get('Background').inputs['Strength'].default_value = 0.45
     bpy.ops.object.light_add(type='SUN', location=(-10, -10, 20))
     light = bpy.context.object
     light.name = 'Afternoon sun'
-    light.data.energy = 3.0
+    light.data.energy = 2.2
     light.data.angle = math.radians(4)
     light.rotation_euler = (math.radians(28), math.radians(-24), math.radians(-35))
     W, D = (scene['width'], scene['depth'])
@@ -569,7 +732,7 @@ def setup_lighting(view):
         light.location = (px, -pz, py)
         light.rotation_euler = (target - light.location).to_track_quat('-Z', 'Y').to_euler()
     sc.view_settings.view_transform = 'AgX'
-    sc.view_settings.exposure = math.log2(PRESENTATION.get('exposure', 1)) + 0.75
+    sc.view_settings.exposure = math.log2(PRESENTATION.get('exposure', 1))
     for screen in bpy.data.screens:
         for area in screen.areas:
             if area.type == 'VIEW_3D':
@@ -597,6 +760,20 @@ if a.render:
     sc.render.filepath = str(out / 'render.png')
     bpy.ops.render.render(write_still=True)
 else:
-    for mode in ('exterior', 'interior', 'cutaway'):
+    for mode in ([a.only_view] if a.only_view else ('exterior', 'interior', 'cutaway')):
         build(mode)
+(out / 'electrical-concept.json').write_text(json.dumps({
+    'status': 'Concept only — not engineer reviewed',
+    'floors': [dict(level=i, **electrical_plan({**MASTER, **layout}))
+               for i, layout in enumerate([MASTER, *MASTER.get('upper_floors', [])])]
+}, indent=2))
+(out / 'plumbing-concept.json').write_text(json.dumps({
+    'status': 'Concept only — not engineer reviewed',
+    'floors': [dict(level=i, **plumbing_plan({**MASTER, **layout}))
+               for i, layout in enumerate([MASTER, *MASTER.get('upper_floors', [])])]
+}, indent=2))
+quantity_plan = construction_plan(MASTER)
+quantity_plan['storeys'] = MASTER.get('storeys',1)
+quantity_plan['quantities']['illustrative_building_concrete_m3'] = round(quantity_plan['quantities']['concrete_per_floor_m3']*MASTER.get('storeys',1)+quantity_plan['quantities']['footings_m3'],3)
+(out / 'construction-concept.json').write_text(json.dumps(quantity_plan,indent=2))
 print('DYNAMIC_DESIGN_READY', out)

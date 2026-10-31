@@ -50,9 +50,9 @@ controls.dampingFactor = .09;
 controls.maxPolarAngle = Math.PI * .49;
 controls.minDistance = 1;
 controls.maxDistance = 130;
-const ambient = new THREE.HemisphereLight(0xc9dcf0, 0x746653, 2.2);
+const ambient = new THREE.HemisphereLight(0xd8e2ea, 0x645c50, 1.0);
 world.add(ambient);
-const sun = new THREE.DirectionalLight(0xffefd5, 4.0);
+const sun = new THREE.DirectionalLight(0xffefd5, 2.4);
 sun.position.set(- 8, 20, 10);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
@@ -462,15 +462,135 @@ function updateFloorSelector() {
   }
   if (![... select.options].some(o => o.value === state.floor)) state.floor = 'all';
   select.value = state.floor;
+  updateRoomCameras();
 }
+function updateRoomCameras() {
+  const level = state.floor === 'all' ? 0 : Number(state.floor);
+  const layout = level ? state.scene?.upper_floors?.find(f => f.level === level) : state.scene;
+  const dropdown = $('room-camera');
+  const previousRoom = dropdown.value;
+  dropdown.replaceChildren();
+  for (const room of layout?.rooms || []) {
+    if (room.kind === 'stairs') continue;
+    const option = document.createElement('option');
+    option.value = room.id;
+    option.textContent = room.name;
+    dropdown.append(option);
+  }
+  if ([...dropdown.options].some(option => option.value === previousRoom)) dropdown.value = previousRoom;
+  for (const [id,file,prefix] of [
+    ['electrical-report','electrical-concept.json','Electrical'],
+    ['plumbing-report','plumbing-concept.json','Plumbing'],
+    ['construction-report','construction-concept.json','Structure']]) {
+    $(id).href = state.base + '/' + file;
+    $(id).hidden = !state.objects.some(o => (o.userData.category || '').startsWith(prefix));
+  }
+}
+$('rebuild-interior').onclick = async () => {
+  if (!state.scene || state.busy) return;
+  notice('Rebuilding prompt-selected interior, electrical, plumbing and construction concepts. No additional Groq call.', false, true);
+  const result = await job('build', {scene:state.scene, edits:state.edits}, $('rebuild-interior'));
+  if (!result) return;
+  state.base = '/output/' + result.id;
+  state.view = 'interior';
+  if (state.floor === 'all') state.floor = '0';
+  document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === 'interior'));
+  await loadModel();
+  notice('Interior and services rebuilt. Use Show all services clearly or select a construction stage.');
+};
+$('enter-room').onclick = async () => {
+  if (!state.scene || state.busy) return;
+  const level = state.floor === 'all' ? 0 : Number(state.floor);
+  const layout = level ? state.scene.upper_floors.find(f => f.level === level) : state.scene;
+  const room = layout.rooms.find(r => r.id === $('room-camera').value);
+  if (!room) return;
+  state.floor = String(level);
+  state.view = 'interior';
+  $('ceilings-view').checked = true;
+  document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === 'interior'));
+  await loadModel({fit:false});
+  const height = 0.22 + (layout.elevation || 0) + 1.6;
+  const contents = layout.furniture.filter(f => f.room_id === room.id);
+  const focus = contents.find(f => f.kind === 'bed') || contents.find(f => f.kind === 'sofa') || contents[0];
+  const tx = focus?.x ?? room.x + room.width / 2;
+  const ty = focus?.y ?? room.y + room.depth / 2;
+  const candidates = [
+    [room.x+0.5,room.y+0.5], [room.x+room.width-0.5,room.y+0.5],
+    [room.x+0.5,room.y+room.depth-0.5], [room.x+room.width-0.5,room.y+room.depth-0.5]
+  ];
+  const clear = candidates.filter(([x,y]) => contents.every(f => {
+    const rotated = Math.abs(f.rotation_deg % 180) > 45;
+    const w = rotated ? f.depth : f.width, d = rotated ? f.width : f.depth;
+    return Math.abs(x-f.x)>w/2+0.15 || Math.abs(y-f.y)>d/2+0.15;
+  }));
+  const position = (clear.length ? clear : candidates).sort((a,b) => Math.hypot(b[0]-tx,b[1]-ty)-Math.hypot(a[0]-tx,a[1]-ty))[0];
+  camera.position.set(position[0], height, -position[1]);
+  controls.target.set(tx, focus ? height-0.85 : height-0.15, -ty);
+  controls.minDistance = 0.1;
+  controls.update();
+  notice('Eye-level room view. Drag to orbit; scroll to zoom.');
+};
+function updateLayerLabel() {
+  const phase = $('construction-view').value;
+  const services = ['electrical-view','cold-view','hot-view','drain-view'].some(id => $(id).checked);
+  const label = phase !== 'finished' ? phase.toUpperCase() : services ? ($('electrical-isolate').checked ? 'SERVICES ISOLATED' : 'BUILDING + SERVICES') : 'FINISHED';
+  $('view-mode-label').textContent = label + ' / ' + state.mode.toUpperCase();
+}
+$('normal-view').onclick = async () => {
+  if (!state.scene || state.busy) return;
+  for (const id of ['electrical-view','cold-view','hot-view','drain-view','electrical-isolate']) $(id).checked = false;
+  $('construction-view').value = 'finished';
+  $('ceilings-view').checked = false;
+  state.floor = 'all';
+  state.view = 'exterior';
+  $('exposure').value = '1';
+  $('exposure-value').textContent = '1.0';
+  document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === 'exterior'));
+  setShading('rendered');
+  await loadModel();
+  notice('Normal building view restored. Your design and object edits are preserved.');
+};
 function applyFloorVisibility() {
   select(null);
-  for (const o of state.objects) o.visible = state.floor === 'all' ||(o.userData.level || 0) === Number(state.floor);
+  const electrical = $('electrical-view').checked;
+  const networks = ['cold', 'hot', 'drain'].filter(k => $(k+'-view').checked);
+  const isolate = (electrical || networks.length > 0) && $('electrical-isolate').checked;
+  const phase = $('construction-view').value;
+  for (const o of state.objects) {
+    const category = o.userData.category || '';
+    const sameFloor = state.floor === 'all' || (o.userData.level || 0) === Number(state.floor);
+    let visible;
+    if (category.startsWith('Electrical')) visible = electrical;
+    else if (category.startsWith('Plumbing ')) visible = networks.includes(category.slice(9));
+    else if (category === 'Ceiling') visible = phase === 'finished' && !isolate && $('ceilings-view').checked;
+    else if (category.startsWith('Structure ')) visible = phase === 'frame';
+    else if (category === 'Rebar concept') visible = phase === 'rebar';
+    else if (category === 'Formwork concept') visible = phase === 'formwork';
+    else visible = phase === 'finished' && (!isolate || category === 'Floor');
+    o.visible = sameFloor && visible;
+  }
   renderer.shadowMap.needsUpdate = true;
+  updateLayerLabel();
   drawOutliner();
 }
+for (const id of ['electrical-view', 'electrical-isolate', 'cold-view', 'hot-view', 'drain-view', 'construction-view', 'ceilings-view']) $(id).onchange = () => {
+  applyFloorVisibility();
+  rebuildEdges();
+};
+$('show-services').onclick = () => {
+  for (const id of ['electrical-view','cold-view','hot-view','drain-view','electrical-isolate']) $(id).checked = true;
+  $('construction-view').value = 'finished';
+  setShading('material');
+  applyFloorVisibility();
+  rebuildEdges();
+  frameScene();
+  if (!state.objects.some(o => (o.userData.category || '').startsWith('Plumbing'))) {
+    notice('This older model needs Rebuild interior + services first.', true);
+  } else notice('Amber/blue: electrical · Cyan: cold water · Red: hot water · Brown: drainage. Concept only.');
+};
 $('floor-view').onchange = e => {
   state.floor = e.target.value;
+  updateRoomCameras();
   applyFloorVisibility();
   rebuildEdges();
   frameScene();
@@ -515,7 +635,9 @@ function setShading(mode) {
       o.material = o.userData.displayMaterials;
       delete o.userData.displayMaterials;
     }
-    if (mode === 'wireframe' || mode === 'solid') {
+    const category = editable(o)?.userData.category || '';
+    const service = /^(Electrical|Plumbing|Rebar)/.test(category);
+    if ((mode === 'wireframe' || mode === 'solid') && !service) {
       o.userData.displayMaterials = o.material;
       const mat = new THREE.MeshStandardMaterial({
         color: mode === 'solid' ? 0xb0b7bd: 0xc4d0d6,
@@ -528,13 +650,14 @@ function setShading(mode) {
     }
   });
   const rendered = mode === 'rendered';
-  sun.intensity = rendered ? 4: 2.1;
-  ambient.intensity = rendered ? 2.2: 2.8;
-  sun.castShadow = rendered && $('shadows').checked;
+  sun.intensity = rendered ? 2.4 : mode === 'solid' ? 1.8 : 1.5;
+  ambient.intensity = rendered ? 1.0 : 1.25;
+  sun.castShadow = (rendered || mode === 'solid') && $('shadows').checked;
   ground.material.color.set(rendered ? '#707770': '#303942');
   world.background.set(rendered ? '#89949a': '#303942');
   world.environmentIntensity = mode === 'material' ? 1.5: 1;
   renderer.toneMappingExposure = Number($('exposure').value);
+  updateLayerLabel();
 }
 async function api(path, payload) {
   const res = await fetch(path, {
@@ -551,7 +674,7 @@ async function api(path, payload) {
 }
 function setBusy(busy, button) {
   state.busy = busy;
-  for (const id of['generate', 'demo', 'multi-demo', 'render', 'export-glb', 'export-blend', 'open']) $(id).disabled = busy;
+  for (const id of['generate', 'demo', 'multi-demo', 'detail-demo', 'render', 'export-glb', 'export-blend', 'open', 'rebuild-interior', 'enter-room', 'normal-view']) $(id).disabled = busy;
   $('empty-demo').disabled = busy;
   document.querySelectorAll('button.busy').forEach(b => b.classList.remove('busy'));
   if (busy && button) button.classList.add('busy');
@@ -644,6 +767,7 @@ $('views').onclick = e => {
   const b = e.target.closest('[data-view]');
   if (! b || ! state.scene || state.busy) return;
   state.view = b.dataset.view;
+  $('ceilings-view').checked = false;
   state.floor = state.view === 'exterior' ? 'all': state.floor === 'all' ? '0': state.floor;
   document.querySelectorAll('[data-view]').forEach(x => x.classList.toggle('active', x === b));
   loadModel({
@@ -797,6 +921,10 @@ $('screenshot').onclick =() => {
   updateSelectionBox();
 };
 $('render').onclick = async() => {
+  if ($('construction-view').value !== 'finished' || $('electrical-view').checked || ['cold','hot','drain'].some(k => $(k+'-view').checked)) {
+    notice('Use Viewport screenshot for concept service/construction views. Switch off service layers and select Finished architecture for a Cycles render.', true);
+    return;
+  }
   if (! state.scene) {
     notice('Load or generate a design first.', true);
     return;
@@ -808,6 +936,7 @@ $('render').onclick = async() => {
     view: state.view,
     presentation: {
       floor: state.floor,
+      ceilings: $('ceilings-view').checked,
       camera: camera.position.toArray(),
       target: controls.target.toArray(),
       sun: sun.position.toArray(),
@@ -910,4 +1039,37 @@ $('multi-demo').onclick = async () => {
     state.dirty = false;
     notice('Four-floor example: stairs, lift, gym, 8 parking bays and park. No Groq call.');
   } catch(error) { notice(error.message, true); }
+};
+
+$('detail-demo').onclick = async () => {
+  if (state.busy) return;
+  try {
+    const response = await fetch('/examples/detail-benchmark.json');
+    if (!response.ok) throw new Error('Detailed room example is unavailable.');
+    const scene = await response.json();
+    const cached = await fetch('/output/detail-benchmark/build-ready.json');
+    let base = '/output/detail-benchmark';
+    if (!cached.ok) {
+      const result = await job('build', {scene, edits:{}}, $('detail-demo'));
+      if (!result) return;
+      base = '/output/' + result.id;
+    }
+    state.scene = scene;
+    state.source = 'example';
+    state.edits = {};
+    state.history = []; state.future = [];
+    state.base = base; state.view = 'interior'; state.floor = '0';
+    for (const id of ['electrical-view','cold-view','hot-view','drain-view','electrical-isolate']) $(id).checked = false;
+    $('construction-view').value = 'finished';
+    $('ceilings-view').checked = true;
+    document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active',b.dataset.view==='interior'));
+    setShading('rendered');
+    describeScene(null);
+    await loadModel({fit:false});
+    $('room-camera').value = 'bedroom';
+    camera.position.set(3.45,1.85,-0.75);
+    controls.target.set(2.1,0.87,-3.0);
+    controls.minDistance = 0.1; controls.update();
+    notice('Detailed bedroom/bathroom example. Explore the sewn cushions, folded duvet, curtain folds and fitted openings. No Groq call.');
+  } catch(error) { notice(error.message,true); }
 };

@@ -1,7 +1,7 @@
 """Small provider contract: semantic requirements, never mesh coordinates."""
 from typing import Literal
 from pydantic import Field, model_validator, field_validator
-from schema import Data, Color, Response
+from schema import Data, Color, Response, InteriorStyle, MaterialPalette
 FurnitureKind = Literal['bed', 'sofa', 'table', 'chair', 'kitchen', 'wardrobe', 'toilet', 'basin', 'shower', 'plant', 'box', 'cylinder', 'treadmill', 'exercise_bike', 'weight_rack', 'bench', 'car']
 # Provider vocabulary is normalized before the strict scene contract is applied.
 FURNITURE_ALIASES = {
@@ -20,6 +20,7 @@ FURNITURE_ALIASES = {
 RoomKind = str
 
 class RoomIntent(Data):
+    materials: MaterialPalette | None = None
     id: str = Field(min_length=1, max_length=40, pattern='^[A-Za-z0-9_-]+$')
     name: str = Field(min_length=1, max_length=60)
     kind: RoomKind = Field(min_length=1,max_length=32)
@@ -28,6 +29,8 @@ class RoomIntent(Data):
     attached_to: str | None = None
     furniture: list[FurnitureKind] = Field(default_factory=list, max_length=8)
     floor_color: Color | None = None
+    interior_style: InteriorStyle | None = None
+    furniture_scale: float = Field(default=1.0, ge=0.75, le=1.25)
 
     @field_validator('furniture', mode='before')
     @classmethod
@@ -55,6 +58,8 @@ class SiteBrief(Data):
     pool_depth: float = Field(default=0.0, ge=0)
 
 class DesignBrief(Data):
+    materials: MaterialPalette | None = None
+    interior_style: InteriorStyle = 'modern'
     width: float = Field(ge=5, le=60)
     depth: float = Field(ge=5, le=60)
     shape: Literal['rectangle', 'L', 'U']
@@ -81,6 +86,22 @@ class DesignBrief(Data):
         if self.storey_height is not None and self.storey_height < self.ceiling_height + 0.18:
             # Provider heights are preferences; retain ceiling clearance and add slab.
             self.storey_height = round(self.ceiling_height + 0.25, 4)
+        # Resolve only unambiguous ID/name aliases; never guess a bedroom arbitrarily.
+        import re
+        def canonical(value):
+            value = re.sub(r'[^a-z0-9]', '', value.lower())
+            return value.replace('bedroom', 'bed')
+        for program in [self.rooms, *[g.rooms for g in self.upper_floors]]:
+            bedrooms = [r for r in program if r.kind == 'bedroom']
+            for room in program:
+                if room.kind != 'bathroom' or not room.attached_to:
+                    continue
+                exact = [r for r in bedrooms if r.id == room.attached_to]
+                if exact:
+                    continue
+                matches = [r for r in bedrooms if canonical(room.attached_to) in (canonical(r.id), canonical(r.name))]
+                if len(matches) == 1:
+                    room.attached_to = matches[0].id
         seen_levels = set()
         for group in self.upper_floors:
             for level in group.levels:
@@ -150,6 +171,17 @@ Use zone=front for public spaces and rear for bedrooms. Only attached bathrooms 
 attached_to, referencing their bedroom ID. Shared bathrooms have attached_to=null.
 Furniture is a small list of requested kinds, not coordinates: bedroom bed+wardrobe,
 bathroom toilet+basin+shower, living sofa+table, kitchen kitchen. Halls need no furniture.
+Use materials for global finishes and optional room materials for overrides.
+Roles: wood, upholstery, stone (countertops), curtain, floor, wall. Each role may specify
+finish (plain, oak, walnut, stone, marble, concrete, linen, leather, plaster, ceramic),
+color RGB 0–1, roughness .05–1, repeat_m in metres. Omit unspecified optional material roles/fields and room overrides. Use global specs for shared finishes.
+Explicit color/material requests take priority over style defaults. Do not use a floor override
+for every room if the user requested different bedroom and living floors: use room overrides.
+Choose realistic, distinct finishes from the prompt; do not reuse the example palette.
+Select interior_style: modern, traditional, industrial, coastal or minimalist based on the prompt.
+Room-level interior_style may override it. furniture_scale ranges .75–1.25; use 1 by default.
+Traditional means panelled timber furniture; industrial means exposed metal frames; coastal means slatted light timber; minimalist means simple low-profile furniture.
+Electrical, cold/hot water, drainage and structural concept overlays are generated locally, not unsupported features. Do not invent engineering certification.
 Use palette values RGB 0–1, interpreting named colors. Do not reuse example beige by default.
 For a color-only change with previous_scene, action=palette and preserve room IDs/counts;
 the engine keeps all geometry exactly. For a new/different building use action=new/layout.

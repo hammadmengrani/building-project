@@ -65,3 +65,31 @@ For a zero-API test use Open in the studio and choose `l-courtyard-project.json`
 Room target areas are preferences, not guaranteed exact per-room dimensions. Circulation may be split into multiple rectangular rooms. Shape, required room groups, exterior bedroom windows and attached-bath access are checked locally. A brief that cannot fit the current partition vocabulary returns a fitting explanation without deleting requested rooms, substituting the example, or sending another Groq call.
 
 After updating Python files, restart your own server with `./realistic-studio/run.sh --port 8504` from the parent directory, then hard-refresh the browser. An already running Python process retains its old imported prompt and schema.
+
+## Detailed interiors and electrical concept
+
+Hard-refresh the browser, then use **Update interior · no Groq call** to rebuild the current scene with the new furniture detail, finishes, ceiling fixtures and separate electrical entities. Select a floor and use **Enter selected room** for an eye-level camera. New generations automatically use the updated local Blender builder.
+
+Under **Electrical concept**, show routes and optionally hide walls/furniture. Amber identifies lighting circuits; blue identifies power circuits, not wire insulation colors. Download the concept JSON report after rebuilding. The overlay is hidden by default in this app but remains separate geometry in exported GLBs. Cycles images currently render architecture without the overlay. There is no engineer sign-off, cable/breaker sizing or installable routing. See [design review notes](docs/DESIGN_REVIEW.md) for research sources and required engineering work.
+
+### Prompt-selected styles, plumbing and construction layers
+
+Restart the Python server after this schema update. Interiors support `modern`, `traditional`, `industrial`, `coastal` and `minimalist`, including room-specific overrides and furniture scale preferences. These select actual parametric furniture forms as well as finishes; arbitrary custom furniture meshes are not generated.
+
+Use **Show all services clearly** to isolate electrical and cold/hot/drain networks. **Construction stage** switches between architecture, assumed concrete frame, column rebar cages and column shuttering. Three downloadable concept JSON reports explain omissions and dimensions. These are visual assumptions, not engineer-approved sizing, installation routes or a complete quantity takeoff. Use **Viewport screenshot** for concept views; Cycles renders finished architecture.
+
+### Return to normal and prompt material roles
+
+Use **Back to building** to clear isolated service/construction views and return to the finished exterior. The toolbar shows the active layer/shading state. Materials may be specified globally and per room using wood, upholstery, stone, curtain, floor and wall roles, each with optional color, finish, roughness and repeat_m. Supported finish families are procedural neutral maps; the prompt controls the tint. Existing projects remain loadable with default material choices. Restart the Python server for the new brief/scene schema, hard-refresh the browser and rebuild to update older GLBs.
+
+### Close-up furniture and architectural detailing
+
+The local builder now uses curved cushions with converted mesh piping, a sewn mattress, pillows, headboard upholstery and a folded/draped duvet mesh. Sofa seats/backs/arms use rounded textile forms. Basins and toilets have shaped recessed bowls; kitchen fittings include sink/tap, hob/burners and conditional upper cabinets. Door panels, hinges and architraves and pleated curtain meshes are modeled separately. Door skirting and curtain placement use opening centers correctly.
+
+Use **Load detailed room** to inspect the dimensioned bedroom/bathroom example without Groq. Its canonical scene is `static/examples/detail-benchmark.json`; cached exports are used when present, otherwise the ordinary local build API builds them. **Enter selected room** enables ceilings; **Show ceilings in room view** controls the ceiling layer. Roof off and Back to building restore open/normal viewing. For an existing project, **Rebuild interior + services** applies the updated builder.
+
+The benchmark Cycles image is stored at `output/detail-benchmark/render.png` when generated. A successful sample render and geometry export do not mean a full IFC quantity engine or engineering analysis has been implemented. Bonsai is not used by this update.
+
+## React Native mobile prototype
+
+The companion app lives in [`../form-mobile`](../form-mobile/README.md). It connects to this backend over a trusted LAN, includes an offline furnished GLB sample and supports native 3D/tabletop AR through a development build. Newly built scenes include clean `mobile-*.glb` exports and a metre-scale `mobile-manifest.json`; existing cached scenes must be rebuilt for mobile. See the mobile README for device support, Android setup and current prototype limits.

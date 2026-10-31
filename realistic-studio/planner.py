@@ -56,7 +56,7 @@ def allocate(units, length, cross):
 def room_record(intent, rect, brief):
     x, y, w, d = rect
     color = intent.floor_color or (brief.bedroom_floor_color if intent.kind == 'bedroom' else brief.floor_color)
-    return dict(id=intent.id, name=intent.name, kind=intent.kind, x=rounded(x), y=rounded(y), width=rounded(w), depth=rounded(d), height=brief.ceiling_height, floor_color=color.model_dump())
+    return dict(id=intent.id, name=intent.name, kind=intent.kind, x=rounded(x), y=rounded(y), width=rounded(w), depth=rounded(d), height=brief.ceiling_height, floor_color=color.model_dump(), interior_style=intent.interior_style or brief.interior_style, furniture_scale=intent.furniture_scale)
 
 def fill_strip(units, rect, axis, brief):
     x, y, w, d = rect
@@ -307,6 +307,8 @@ def door_approaches(scene, room):
 
 def positions(room, kind):
     w, d, h = SIZES[kind]
+    scale = room.get('furniture_scale', 1.0) if kind in ('bed','sofa','table','wardrobe','chair') else 1.0
+    w, d = w*scale, d*scale
     candidates = []
     for angle in (0.0, 90.0):
         dx, dy = (w, d) if angle == 0 else (d, w)
@@ -445,7 +447,7 @@ def summarize_scene(scene):
             if token in name:return kind
         return 'hall'
     def program(floor):
-        return [dict(id=r['id'],name=r['name'],kind=room_kind(r),area=rounded(r['width']*r['depth']),floor_color=r['floor_color']) for r in floor['rooms']]
+        return [dict(id=r['id'],name=r['name'],kind=room_kind(r),area=rounded(r['width']*r['depth']),floor_color=r['floor_color'],materials=r.get('materials'),interior_style=r.get('interior_style','modern'),furniture_scale=r.get('furniture_scale',1.0)) for r in floor['rooms']]
     def occupied(x,y):
         return any(r['x']<=x<=r['x']+r['width'] and r['y']<=y<=r['y']+r['depth'] for r in scene['rooms'])
     width,depth=scene['width'],scene['depth']
@@ -462,12 +464,26 @@ def summarize_scene(scene):
         park=site.get('park')
         pool=site.get('pool')
         site_summary=dict(width=site['width'],depth=site['depth'],parking_spaces=len(site.get('parking',[])),park_area=rounded(park['width']*park['depth']) if park else 0.,pool_width=pool['width'] if pool else 0.,pool_depth=pool['depth'] if pool else 0.)
-    return dict(storeys=scene.get('storeys',1),lift=bool((scene.get('vertical_core') or {}).get('lift')),site=site_summary,upper_floors=list(groups.values()),shape=scene.get('shape') or shape,courtyard_corner=scene.get('courtyard_corner') or ('rear-right' if left else 'rear-left'),layout_variant=scene.get('layout_variant',0),width=width,depth=depth,wall_color=scene['wall_color'],accent_color=scene['accent_color'],roof_color=scene['roof_color'],rooms=program(scene))
+    return dict(materials=scene.get('materials'),interior_style=scene.get('interior_style','modern'),storeys=scene.get('storeys',1),lift=bool((scene.get('vertical_core') or {}).get('lift')),site=site_summary,upper_floors=list(groups.values()),shape=scene.get('shape') or shape,courtyard_corner=scene.get('courtyard_corner') or ('rear-right' if left else 'rear-left'),layout_variant=scene.get('layout_variant',0),width=width,depth=depth,wall_color=scene['wall_color'],accent_color=scene['accent_color'],roof_color=scene['roof_color'],rooms=program(scene))
 
 
 def compile_brief(data, previous=None):
     brief = data if isinstance(data, DesignBrief) else DesignBrief.model_validate(data)
     if brief.storeys > 1 or brief.site is not None or (previous and previous.get('storeys', 1) > 1):
         from building_plan import compile_building
-        return compile_building(brief, previous)
-    return _compile_single(brief, previous)
+        result = compile_building(brief, previous)
+    else:
+        result = _compile_single(brief, previous)
+    result['interior_style'] = brief.interior_style
+    result['materials'] = brief.materials.model_dump(exclude_none=True) if brief.materials else None
+    for level, layout in enumerate([result, *result.get('upper_floors', [])]):
+        programs = [g.rooms for g in brief.upper_floors if level in g.levels]
+        intents = {r.id:r for r in (programs[0] if programs else brief.rooms)}
+        for room in layout['rooms']:
+            intent = intents.get(room['id'])
+            room['interior_style'] = (intent.interior_style if intent else None) or brief.interior_style
+            room['materials'] = intent.materials.model_dump(exclude_none=True) if intent and intent.materials else None
+        for index, item in enumerate(layout['furniture']):
+            if brief.action != 'palette':
+                item['design_variant'] = (brief.layout_variant + index + level) % 3
+    return result
