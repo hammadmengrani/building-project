@@ -1,0 +1,1926 @@
+{
+  "version": 1,
+  "scene": {
+    "width": 20.0,
+    "depth": 18.0,
+    "wall_color": {
+      "r": 0.18,
+      "g": 0.31,
+      "b": 0.25
+    },
+    "accent_color": {
+      "r": 0.66,
+      "g": 0.23,
+      "b": 0.12
+    },
+    "roof_color": {
+      "r": 0.09,
+      "g": 0.1,
+      "b": 0.11
+    },
+    "rooms": [
+      {
+        "id": "office",
+        "name": "Management office",
+        "x": 0.0,
+        "y": 5.4,
+        "width": 6.188,
+        "depth": 4.2378,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "office"
+      },
+      {
+        "id": "reception",
+        "name": "Reception",
+        "x": 0.0,
+        "y": 9.6378,
+        "width": 6.188,
+        "depth": 6.7822,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "reception"
+      },
+      {
+        "id": "bath",
+        "name": "Shared bathroom",
+        "x": 0.0,
+        "y": 16.42,
+        "width": 6.188,
+        "depth": 1.58,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "bathroom"
+      },
+      {
+        "id": "gym",
+        "name": "Gym",
+        "x": 7.988,
+        "y": 5.4,
+        "width": 12.012,
+        "depth": 12.6,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "gym"
+      },
+      {
+        "id": "hall",
+        "name": "Ground circulation",
+        "x": 6.188,
+        "y": 5.4,
+        "width": 1.8,
+        "depth": 12.6,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "hall"
+      },
+      {
+        "id": "vertical_core",
+        "name": "Stair & lift core",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 5.4,
+        "depth": 5.4,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "stairs"
+      },
+      {
+        "id": "floor_lobby",
+        "name": "Floor lobby",
+        "x": 5.4,
+        "y": 0.0,
+        "width": 14.6,
+        "depth": 5.4,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "hall"
+      }
+    ],
+    "openings": [
+      {
+        "id": "door_1",
+        "kind": "door",
+        "axis": "y",
+        "x": 6.188,
+        "y": 6.4627,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_2",
+        "kind": "door",
+        "axis": "y",
+        "x": 6.188,
+        "y": 11.0821,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_3",
+        "kind": "door",
+        "axis": "y",
+        "x": 6.188,
+        "y": 17.084,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_4",
+        "kind": "door",
+        "axis": "y",
+        "x": 7.988,
+        "y": 7.717,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "entrance",
+        "kind": "door",
+        "axis": "x",
+        "x": 7.088,
+        "y": 5.4,
+        "width": 1.0,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "window_7",
+        "kind": "window",
+        "axis": "y",
+        "x": 0.0,
+        "y": 13.0289,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "window_8",
+        "kind": "window",
+        "axis": "x",
+        "x": 3.094,
+        "y": 18.0,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "window_9",
+        "kind": "window",
+        "axis": "y",
+        "x": 20.0,
+        "y": 11.7,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "core_access",
+        "kind": "door",
+        "axis": "y",
+        "x": 5.4,
+        "y": 1.0,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "building_entrance",
+        "kind": "door",
+        "axis": "x",
+        "x": 8.052,
+        "y": 0.0,
+        "width": 1.0,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": true
+      },
+      {
+        "id": "ext_office",
+        "kind": "window",
+        "axis": "y",
+        "x": 0.0,
+        "y": 7.5189,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "ext_hall",
+        "kind": "window",
+        "axis": "x",
+        "x": 7.088,
+        "y": 18.0,
+        "width": 1.4,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "ext_vertical_core",
+        "kind": "window",
+        "axis": "x",
+        "x": 2.7,
+        "y": 0.0,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "ext_floor_lobby",
+        "kind": "window",
+        "axis": "x",
+        "x": 12.7,
+        "y": 0.0,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      }
+    ],
+    "furniture": [
+      {
+        "id": "office_f1",
+        "room_id": "office",
+        "kind": "table",
+        "x": 3.094,
+        "y": 7.5189,
+        "width": 1.0,
+        "depth": 1.3,
+        "height": 0.75,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "id": "office_f2",
+        "room_id": "office",
+        "kind": "chair",
+        "x": 5.738,
+        "y": 7.5189,
+        "width": 0.5,
+        "depth": 0.5,
+        "height": 0.8,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "id": "reception_f1",
+        "room_id": "reception",
+        "kind": "table",
+        "x": 3.094,
+        "y": 13.0289,
+        "width": 1.0,
+        "depth": 1.3,
+        "height": 0.75,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "id": "reception_f2",
+        "room_id": "reception",
+        "kind": "chair",
+        "x": 5.738,
+        "y": 10.0878,
+        "width": 0.5,
+        "depth": 0.5,
+        "height": 0.8,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "id": "bath_f1",
+        "room_id": "bath",
+        "kind": "shower",
+        "x": 0.65,
+        "y": 17.07,
+        "width": 0.9,
+        "depth": 0.9,
+        "height": 0.08,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "id": "bath_f2",
+        "room_id": "bath",
+        "kind": "toilet",
+        "x": 1.772,
+        "y": 17.45,
+        "width": 0.5,
+        "depth": 0.7,
+        "height": 0.75,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "id": "bath_f3",
+        "room_id": "bath",
+        "kind": "basin",
+        "x": 2.4455,
+        "y": 17.55,
+        "width": 0.6,
+        "depth": 0.5,
+        "height": 0.85,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "id": "gym_f1",
+        "room_id": "gym",
+        "kind": "treadmill",
+        "x": 8.613,
+        "y": 10.4125,
+        "width": 0.85,
+        "depth": 1.9,
+        "height": 1.35,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.66,
+          "g": 0.23,
+          "b": 0.12
+        }
+      },
+      {
+        "id": "gym_f2",
+        "room_id": "gym",
+        "kind": "exercise_bike",
+        "x": 8.838,
+        "y": 5.925,
+        "width": 0.65,
+        "depth": 1.3,
+        "height": 1.25,
+        "rotation_deg": 90.0,
+        "color": {
+          "r": 0.66,
+          "g": 0.23,
+          "b": 0.12
+        }
+      },
+      {
+        "id": "gym_f3",
+        "room_id": "gym",
+        "kind": "weight_rack",
+        "x": 8.463,
+        "y": 13.0375,
+        "width": 1.5,
+        "depth": 0.55,
+        "height": 1.15,
+        "rotation_deg": 90.0,
+        "color": {
+          "r": 0.66,
+          "g": 0.23,
+          "b": 0.12
+        }
+      }
+    ],
+    "shape": "rectangle",
+    "courtyard_corner": "rear-right",
+    "layout_variant": 0,
+    "storeys": 4,
+    "storey_height": 3.45,
+    "upper_floors": [
+      {
+        "level": 1,
+        "elevation": 3.45,
+        "name": "Floor 2",
+        "rooms": [
+          {
+            "id": "kitchen",
+            "name": "Kitchen",
+            "x": 0.0,
+            "y": 5.4,
+            "width": 12.012,
+            "depth": 1.58,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "kitchen"
+          },
+          {
+            "id": "living",
+            "name": "Living & dining",
+            "x": 0.0,
+            "y": 6.98,
+            "width": 12.012,
+            "depth": 11.02,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "living"
+          },
+          {
+            "id": "bath",
+            "name": "Shared Bathroom",
+            "x": 13.812,
+            "y": 5.4,
+            "width": 6.188,
+            "depth": 2.4659,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "bathroom"
+          },
+          {
+            "id": "bed1",
+            "name": "Bedroom 1",
+            "x": 13.812,
+            "y": 7.8659,
+            "width": 6.188,
+            "depth": 5.0671,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.45,
+              "g": 0.3,
+              "b": 0.18
+            },
+            "kind": "bedroom"
+          },
+          {
+            "id": "bed2",
+            "name": "Bedroom 2",
+            "x": 13.812,
+            "y": 12.933,
+            "width": 6.188,
+            "depth": 5.067,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.45,
+              "g": 0.3,
+              "b": 0.18
+            },
+            "kind": "bedroom"
+          },
+          {
+            "id": "hall",
+            "name": "Circulation",
+            "x": 12.012,
+            "y": 5.4,
+            "width": 1.8,
+            "depth": 12.6,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "hall"
+          },
+          {
+            "id": "vertical_core",
+            "name": "Stair & lift core",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 5.4,
+            "depth": 5.4,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "stairs"
+          },
+          {
+            "id": "floor_lobby",
+            "name": "Floor lobby",
+            "x": 5.4,
+            "y": 0.0,
+            "width": 14.6,
+            "depth": 5.4,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "hall"
+          }
+        ],
+        "openings": [
+          {
+            "id": "door_1",
+            "kind": "door",
+            "axis": "y",
+            "x": 12.012,
+            "y": 6.064,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_2",
+            "kind": "door",
+            "axis": "y",
+            "x": 12.012,
+            "y": 9.06,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_3",
+            "kind": "door",
+            "axis": "y",
+            "x": 13.812,
+            "y": 6.1969,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_4",
+            "kind": "door",
+            "axis": "y",
+            "x": 13.812,
+            "y": 9.053,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_5",
+            "kind": "door",
+            "axis": "y",
+            "x": 13.812,
+            "y": 14.1201,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "entrance",
+            "kind": "door",
+            "axis": "x",
+            "x": 12.912,
+            "y": 5.4,
+            "width": 1.0,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "window_7",
+            "kind": "window",
+            "axis": "x",
+            "x": 6.006,
+            "y": 5.4,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "window_8",
+            "kind": "window",
+            "axis": "x",
+            "x": 6.006,
+            "y": 18.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "window_10",
+            "kind": "window",
+            "axis": "y",
+            "x": 20.0,
+            "y": 10.3995,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "window_11",
+            "kind": "window",
+            "axis": "x",
+            "x": 16.906,
+            "y": 18.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "core_access",
+            "kind": "door",
+            "axis": "y",
+            "x": 5.4,
+            "y": 1.0,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "ext_bath",
+            "kind": "window",
+            "axis": "y",
+            "x": 20.0,
+            "y": 6.633,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "ext_hall",
+            "kind": "window",
+            "axis": "x",
+            "x": 12.912,
+            "y": 18.0,
+            "width": 1.4,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "ext_vertical_core",
+            "kind": "window",
+            "axis": "x",
+            "x": 2.7,
+            "y": 0.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "ext_floor_lobby",
+            "kind": "window",
+            "axis": "x",
+            "x": 12.7,
+            "y": 0.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          }
+        ],
+        "furniture": [
+          {
+            "id": "kitchen_f1",
+            "room_id": "kitchen",
+            "kind": "kitchen",
+            "x": 1.2,
+            "y": 5.9,
+            "width": 2.0,
+            "depth": 0.6,
+            "height": 0.9,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.66,
+              "g": 0.23,
+              "b": 0.12
+            }
+          },
+          {
+            "id": "living_f1",
+            "room_id": "living",
+            "kind": "sofa",
+            "x": 0.65,
+            "y": 8.18,
+            "width": 0.9,
+            "depth": 2.0,
+            "height": 0.85,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "living_f2",
+            "room_id": "living",
+            "kind": "table",
+            "x": 6.006,
+            "y": 12.49,
+            "width": 1.0,
+            "depth": 1.3,
+            "height": 0.75,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "bath_f1",
+            "room_id": "bath",
+            "kind": "shower",
+            "x": 14.462,
+            "y": 7.2159,
+            "width": 0.9,
+            "depth": 0.9,
+            "height": 0.08,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.9,
+              "g": 0.9,
+              "b": 0.87
+            }
+          },
+          {
+            "id": "bath_f2",
+            "room_id": "bath",
+            "kind": "toilet",
+            "x": 15.584,
+            "y": 7.3159,
+            "width": 0.5,
+            "depth": 0.7,
+            "height": 0.75,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.9,
+              "g": 0.9,
+              "b": 0.87
+            }
+          },
+          {
+            "id": "bath_f3",
+            "room_id": "bath",
+            "kind": "basin",
+            "x": 16.245,
+            "y": 7.3659,
+            "width": 0.6,
+            "depth": 0.5,
+            "height": 0.85,
+            "rotation_deg": 90.0,
+            "color": {
+              "r": 0.9,
+              "g": 0.9,
+              "b": 0.87
+            }
+          },
+          {
+            "id": "bed1_f1",
+            "room_id": "bed1",
+            "kind": "bed",
+            "x": 14.812,
+            "y": 11.733,
+            "width": 1.6,
+            "depth": 2.0,
+            "height": 0.65,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "bed1_f2",
+            "room_id": "bed1",
+            "kind": "wardrobe",
+            "x": 16.3325,
+            "y": 12.433,
+            "width": 1.2,
+            "depth": 0.6,
+            "height": 2.1,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.66,
+              "g": 0.23,
+              "b": 0.12
+            }
+          },
+          {
+            "id": "bed2_f1",
+            "room_id": "bed2",
+            "kind": "bed",
+            "x": 15.959,
+            "y": 13.933,
+            "width": 1.6,
+            "depth": 2.0,
+            "height": 0.65,
+            "rotation_deg": 90.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "bed2_f2",
+            "room_id": "bed2",
+            "kind": "wardrobe",
+            "x": 18.053,
+            "y": 13.433,
+            "width": 1.2,
+            "depth": 0.6,
+            "height": 2.1,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.66,
+              "g": 0.23,
+              "b": 0.12
+            }
+          }
+        ],
+        "access_roots": [
+          "vertical_core"
+        ]
+      },
+      {
+        "level": 2,
+        "elevation": 6.9,
+        "name": "Floor 3",
+        "rooms": [
+          {
+            "id": "kitchen",
+            "name": "Kitchen",
+            "x": 0.0,
+            "y": 5.4,
+            "width": 12.012,
+            "depth": 1.58,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "kitchen"
+          },
+          {
+            "id": "living",
+            "name": "Living & dining",
+            "x": 0.0,
+            "y": 6.98,
+            "width": 12.012,
+            "depth": 11.02,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "living"
+          },
+          {
+            "id": "bath",
+            "name": "Shared Bathroom",
+            "x": 13.812,
+            "y": 5.4,
+            "width": 6.188,
+            "depth": 2.4659,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "bathroom"
+          },
+          {
+            "id": "bed1",
+            "name": "Bedroom 1",
+            "x": 13.812,
+            "y": 7.8659,
+            "width": 6.188,
+            "depth": 5.0671,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.45,
+              "g": 0.3,
+              "b": 0.18
+            },
+            "kind": "bedroom"
+          },
+          {
+            "id": "bed2",
+            "name": "Bedroom 2",
+            "x": 13.812,
+            "y": 12.933,
+            "width": 6.188,
+            "depth": 5.067,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.45,
+              "g": 0.3,
+              "b": 0.18
+            },
+            "kind": "bedroom"
+          },
+          {
+            "id": "hall",
+            "name": "Circulation",
+            "x": 12.012,
+            "y": 5.4,
+            "width": 1.8,
+            "depth": 12.6,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "hall"
+          },
+          {
+            "id": "vertical_core",
+            "name": "Stair & lift core",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 5.4,
+            "depth": 5.4,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "stairs"
+          },
+          {
+            "id": "floor_lobby",
+            "name": "Floor lobby",
+            "x": 5.4,
+            "y": 0.0,
+            "width": 14.6,
+            "depth": 5.4,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "hall"
+          }
+        ],
+        "openings": [
+          {
+            "id": "door_1",
+            "kind": "door",
+            "axis": "y",
+            "x": 12.012,
+            "y": 6.064,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_2",
+            "kind": "door",
+            "axis": "y",
+            "x": 12.012,
+            "y": 9.06,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_3",
+            "kind": "door",
+            "axis": "y",
+            "x": 13.812,
+            "y": 6.1969,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_4",
+            "kind": "door",
+            "axis": "y",
+            "x": 13.812,
+            "y": 9.053,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_5",
+            "kind": "door",
+            "axis": "y",
+            "x": 13.812,
+            "y": 14.1201,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "entrance",
+            "kind": "door",
+            "axis": "x",
+            "x": 12.912,
+            "y": 5.4,
+            "width": 1.0,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "window_7",
+            "kind": "window",
+            "axis": "x",
+            "x": 6.006,
+            "y": 5.4,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "window_8",
+            "kind": "window",
+            "axis": "x",
+            "x": 6.006,
+            "y": 18.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "window_10",
+            "kind": "window",
+            "axis": "y",
+            "x": 20.0,
+            "y": 10.3995,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "window_11",
+            "kind": "window",
+            "axis": "x",
+            "x": 16.906,
+            "y": 18.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "core_access",
+            "kind": "door",
+            "axis": "y",
+            "x": 5.4,
+            "y": 1.0,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "ext_bath",
+            "kind": "window",
+            "axis": "y",
+            "x": 20.0,
+            "y": 6.633,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "ext_hall",
+            "kind": "window",
+            "axis": "x",
+            "x": 12.912,
+            "y": 18.0,
+            "width": 1.4,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "ext_vertical_core",
+            "kind": "window",
+            "axis": "x",
+            "x": 2.7,
+            "y": 0.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "ext_floor_lobby",
+            "kind": "window",
+            "axis": "x",
+            "x": 12.7,
+            "y": 0.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          }
+        ],
+        "furniture": [
+          {
+            "id": "kitchen_f1",
+            "room_id": "kitchen",
+            "kind": "kitchen",
+            "x": 1.2,
+            "y": 5.9,
+            "width": 2.0,
+            "depth": 0.6,
+            "height": 0.9,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.66,
+              "g": 0.23,
+              "b": 0.12
+            }
+          },
+          {
+            "id": "living_f1",
+            "room_id": "living",
+            "kind": "sofa",
+            "x": 0.65,
+            "y": 8.18,
+            "width": 0.9,
+            "depth": 2.0,
+            "height": 0.85,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "living_f2",
+            "room_id": "living",
+            "kind": "table",
+            "x": 6.006,
+            "y": 12.49,
+            "width": 1.0,
+            "depth": 1.3,
+            "height": 0.75,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "bath_f1",
+            "room_id": "bath",
+            "kind": "shower",
+            "x": 14.462,
+            "y": 7.2159,
+            "width": 0.9,
+            "depth": 0.9,
+            "height": 0.08,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.9,
+              "g": 0.9,
+              "b": 0.87
+            }
+          },
+          {
+            "id": "bath_f2",
+            "room_id": "bath",
+            "kind": "toilet",
+            "x": 15.584,
+            "y": 7.3159,
+            "width": 0.5,
+            "depth": 0.7,
+            "height": 0.75,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.9,
+              "g": 0.9,
+              "b": 0.87
+            }
+          },
+          {
+            "id": "bath_f3",
+            "room_id": "bath",
+            "kind": "basin",
+            "x": 16.245,
+            "y": 7.3659,
+            "width": 0.6,
+            "depth": 0.5,
+            "height": 0.85,
+            "rotation_deg": 90.0,
+            "color": {
+              "r": 0.9,
+              "g": 0.9,
+              "b": 0.87
+            }
+          },
+          {
+            "id": "bed1_f1",
+            "room_id": "bed1",
+            "kind": "bed",
+            "x": 14.812,
+            "y": 11.733,
+            "width": 1.6,
+            "depth": 2.0,
+            "height": 0.65,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "bed1_f2",
+            "room_id": "bed1",
+            "kind": "wardrobe",
+            "x": 16.3325,
+            "y": 12.433,
+            "width": 1.2,
+            "depth": 0.6,
+            "height": 2.1,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.66,
+              "g": 0.23,
+              "b": 0.12
+            }
+          },
+          {
+            "id": "bed2_f1",
+            "room_id": "bed2",
+            "kind": "bed",
+            "x": 15.959,
+            "y": 13.933,
+            "width": 1.6,
+            "depth": 2.0,
+            "height": 0.65,
+            "rotation_deg": 90.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "bed2_f2",
+            "room_id": "bed2",
+            "kind": "wardrobe",
+            "x": 18.053,
+            "y": 13.433,
+            "width": 1.2,
+            "depth": 0.6,
+            "height": 2.1,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.66,
+              "g": 0.23,
+              "b": 0.12
+            }
+          }
+        ],
+        "access_roots": [
+          "vertical_core"
+        ]
+      },
+      {
+        "level": 3,
+        "elevation": 10.35,
+        "name": "Floor 4",
+        "rooms": [
+          {
+            "id": "kitchen",
+            "name": "Kitchen",
+            "x": 0.0,
+            "y": 5.4,
+            "width": 12.012,
+            "depth": 1.58,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "kitchen"
+          },
+          {
+            "id": "living",
+            "name": "Living & dining",
+            "x": 0.0,
+            "y": 6.98,
+            "width": 12.012,
+            "depth": 11.02,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "living"
+          },
+          {
+            "id": "bath",
+            "name": "Shared Bathroom",
+            "x": 13.812,
+            "y": 5.4,
+            "width": 6.188,
+            "depth": 2.4659,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "bathroom"
+          },
+          {
+            "id": "bed1",
+            "name": "Bedroom 1",
+            "x": 13.812,
+            "y": 7.8659,
+            "width": 6.188,
+            "depth": 5.0671,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.45,
+              "g": 0.3,
+              "b": 0.18
+            },
+            "kind": "bedroom"
+          },
+          {
+            "id": "bed2",
+            "name": "Bedroom 2",
+            "x": 13.812,
+            "y": 12.933,
+            "width": 6.188,
+            "depth": 5.067,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.45,
+              "g": 0.3,
+              "b": 0.18
+            },
+            "kind": "bedroom"
+          },
+          {
+            "id": "hall",
+            "name": "Circulation",
+            "x": 12.012,
+            "y": 5.4,
+            "width": 1.8,
+            "depth": 12.6,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "hall"
+          },
+          {
+            "id": "vertical_core",
+            "name": "Stair & lift core",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 5.4,
+            "depth": 5.4,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "stairs"
+          },
+          {
+            "id": "floor_lobby",
+            "name": "Floor lobby",
+            "x": 5.4,
+            "y": 0.0,
+            "width": 14.6,
+            "depth": 5.4,
+            "height": 3.2,
+            "floor_color": {
+              "r": 0.78,
+              "g": 0.76,
+              "b": 0.7
+            },
+            "kind": "hall"
+          }
+        ],
+        "openings": [
+          {
+            "id": "door_1",
+            "kind": "door",
+            "axis": "y",
+            "x": 12.012,
+            "y": 6.064,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_2",
+            "kind": "door",
+            "axis": "y",
+            "x": 12.012,
+            "y": 9.06,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_3",
+            "kind": "door",
+            "axis": "y",
+            "x": 13.812,
+            "y": 6.1969,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_4",
+            "kind": "door",
+            "axis": "y",
+            "x": 13.812,
+            "y": 9.053,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "door_5",
+            "kind": "door",
+            "axis": "y",
+            "x": 13.812,
+            "y": 14.1201,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "entrance",
+            "kind": "door",
+            "axis": "x",
+            "x": 12.912,
+            "y": 5.4,
+            "width": 1.0,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "window_7",
+            "kind": "window",
+            "axis": "x",
+            "x": 6.006,
+            "y": 5.4,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "window_8",
+            "kind": "window",
+            "axis": "x",
+            "x": 6.006,
+            "y": 18.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "window_10",
+            "kind": "window",
+            "axis": "y",
+            "x": 20.0,
+            "y": 10.3995,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "window_11",
+            "kind": "window",
+            "axis": "x",
+            "x": 16.906,
+            "y": 18.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "core_access",
+            "kind": "door",
+            "axis": "y",
+            "x": 5.4,
+            "y": 1.0,
+            "width": 0.9,
+            "bottom": 0.0,
+            "height": 2.2,
+            "entrance": false
+          },
+          {
+            "id": "ext_bath",
+            "kind": "window",
+            "axis": "y",
+            "x": 20.0,
+            "y": 6.633,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "ext_hall",
+            "kind": "window",
+            "axis": "x",
+            "x": 12.912,
+            "y": 18.0,
+            "width": 1.4,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "ext_vertical_core",
+            "kind": "window",
+            "axis": "x",
+            "x": 2.7,
+            "y": 0.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          },
+          {
+            "id": "ext_floor_lobby",
+            "kind": "window",
+            "axis": "x",
+            "x": 12.7,
+            "y": 0.0,
+            "width": 2.0,
+            "bottom": 0.85,
+            "height": 1.35,
+            "entrance": false
+          }
+        ],
+        "furniture": [
+          {
+            "id": "kitchen_f1",
+            "room_id": "kitchen",
+            "kind": "kitchen",
+            "x": 1.2,
+            "y": 5.9,
+            "width": 2.0,
+            "depth": 0.6,
+            "height": 0.9,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.66,
+              "g": 0.23,
+              "b": 0.12
+            }
+          },
+          {
+            "id": "living_f1",
+            "room_id": "living",
+            "kind": "sofa",
+            "x": 0.65,
+            "y": 8.18,
+            "width": 0.9,
+            "depth": 2.0,
+            "height": 0.85,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "living_f2",
+            "room_id": "living",
+            "kind": "table",
+            "x": 6.006,
+            "y": 12.49,
+            "width": 1.0,
+            "depth": 1.3,
+            "height": 0.75,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "bath_f1",
+            "room_id": "bath",
+            "kind": "shower",
+            "x": 14.462,
+            "y": 7.2159,
+            "width": 0.9,
+            "depth": 0.9,
+            "height": 0.08,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.9,
+              "g": 0.9,
+              "b": 0.87
+            }
+          },
+          {
+            "id": "bath_f2",
+            "room_id": "bath",
+            "kind": "toilet",
+            "x": 15.584,
+            "y": 7.3159,
+            "width": 0.5,
+            "depth": 0.7,
+            "height": 0.75,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.9,
+              "g": 0.9,
+              "b": 0.87
+            }
+          },
+          {
+            "id": "bath_f3",
+            "room_id": "bath",
+            "kind": "basin",
+            "x": 16.245,
+            "y": 7.3659,
+            "width": 0.6,
+            "depth": 0.5,
+            "height": 0.85,
+            "rotation_deg": 90.0,
+            "color": {
+              "r": 0.9,
+              "g": 0.9,
+              "b": 0.87
+            }
+          },
+          {
+            "id": "bed1_f1",
+            "room_id": "bed1",
+            "kind": "bed",
+            "x": 14.812,
+            "y": 11.733,
+            "width": 1.6,
+            "depth": 2.0,
+            "height": 0.65,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "bed1_f2",
+            "room_id": "bed1",
+            "kind": "wardrobe",
+            "x": 16.3325,
+            "y": 12.433,
+            "width": 1.2,
+            "depth": 0.6,
+            "height": 2.1,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.66,
+              "g": 0.23,
+              "b": 0.12
+            }
+          },
+          {
+            "id": "bed2_f1",
+            "room_id": "bed2",
+            "kind": "bed",
+            "x": 15.959,
+            "y": 13.933,
+            "width": 1.6,
+            "depth": 2.0,
+            "height": 0.65,
+            "rotation_deg": 90.0,
+            "color": {
+              "r": 0.65,
+              "g": 0.27,
+              "b": 0.13
+            }
+          },
+          {
+            "id": "bed2_f2",
+            "room_id": "bed2",
+            "kind": "wardrobe",
+            "x": 18.053,
+            "y": 13.433,
+            "width": 1.2,
+            "depth": 0.6,
+            "height": 2.1,
+            "rotation_deg": 0.0,
+            "color": {
+              "r": 0.66,
+              "g": 0.23,
+              "b": 0.12
+            }
+          }
+        ],
+        "access_roots": [
+          "vertical_core"
+        ]
+      }
+    ],
+    "vertical_core": {
+      "x": 0.0,
+      "y": 0.0,
+      "width": 5.4,
+      "depth": 5.4,
+      "storey_height": 3.45,
+      "lift": true
+    },
+    "site": {
+      "x": -1.5,
+      "y": -22.9,
+      "width": 29.666666666666668,
+      "depth": 42.4,
+      "parking": [
+        {
+          "x": 0.0,
+          "y": -22.7,
+          "width": 2.6,
+          "depth": 5.2,
+          "id": "parking_1"
+        },
+        {
+          "x": 2.6,
+          "y": -22.7,
+          "width": 2.6,
+          "depth": 5.2,
+          "id": "parking_2"
+        },
+        {
+          "x": 5.2,
+          "y": -22.7,
+          "width": 2.6,
+          "depth": 5.2,
+          "id": "parking_3"
+        },
+        {
+          "x": 7.800000000000001,
+          "y": -22.7,
+          "width": 2.6,
+          "depth": 5.2,
+          "id": "parking_4"
+        },
+        {
+          "x": 10.4,
+          "y": -22.7,
+          "width": 2.6,
+          "depth": 5.2,
+          "id": "parking_5"
+        },
+        {
+          "x": 13.0,
+          "y": -22.7,
+          "width": 2.6,
+          "depth": 5.2,
+          "id": "parking_6"
+        },
+        {
+          "x": 0.0,
+          "y": -11.5,
+          "width": 2.6,
+          "depth": 5.2,
+          "id": "parking_7"
+        },
+        {
+          "x": 2.6,
+          "y": -11.5,
+          "width": 2.6,
+          "depth": 5.2,
+          "id": "parking_8"
+        }
+      ],
+      "aisles": [
+        {
+          "x": 0.0,
+          "y": -17.5,
+          "width": 18.0,
+          "depth": 6.0
+        },
+        {
+          "x": 0.0,
+          "y": -6.3,
+          "width": 18.0,
+          "depth": 6.0
+        }
+      ],
+      "park": {
+        "x": 21.0,
+        "y": 0.0,
+        "width": 6.666666666666667,
+        "depth": 18.0
+      }
+    },
+    "access_roots": []
+  },
+  "edits": {},
+  "prompt": "Four-storey building, 20 \u00d7 18 m footprint. Ground floor gym, reception, shared bathroom and management office. Three repeated residential upper floors with 2 bedrooms, bathroom, living/dining and kitchen. Aligned stairs and lift, 8 outdoor parking spaces and a 120 square metre park. Sage plaster, terracotta accents, charcoal roofs."
+}

@@ -1,0 +1,134 @@
+{
+  "width": 20.0,
+  "depth": 18.0,
+  "shape": "rectangle",
+  "courtyard_corner": "rear-right",
+  "entrance": "front-left",
+  "ceiling_height": 3.2,
+  "wall_color": {
+    "r": 0.18,
+    "g": 0.31,
+    "b": 0.25
+  },
+  "accent_color": {
+    "r": 0.66,
+    "g": 0.23,
+    "b": 0.12
+  },
+  "roof_color": {
+    "r": 0.09,
+    "g": 0.1,
+    "b": 0.11
+  },
+  "floor_color": {
+    "r": 0.78,
+    "g": 0.76,
+    "b": 0.7
+  },
+  "bedroom_floor_color": {
+    "r": 0.45,
+    "g": 0.3,
+    "b": 0.18
+  },
+  "furniture_color": {
+    "r": 0.65,
+    "g": 0.27,
+    "b": 0.13
+  },
+  "rooms": [
+    {
+      "id": "gym",
+      "name": "Gym",
+      "kind": "gym",
+      "target_area": 60.0,
+      "zone": "rear"
+    },
+    {
+      "id": "reception",
+      "name": "Reception",
+      "kind": "reception",
+      "target_area": 20.0,
+      "zone": "front"
+    },
+    {
+      "id": "bath",
+      "name": "Shared bathroom",
+      "kind": "bathroom",
+      "target_area": 7.0,
+      "zone": "any"
+    },
+    {
+      "id": "office",
+      "name": "Management office",
+      "kind": "office",
+      "target_area": 15.0,
+      "zone": "front"
+    },
+    {
+      "id": "hall",
+      "name": "Ground circulation",
+      "kind": "hall",
+      "target_area": 20.0,
+      "zone": "any"
+    }
+  ],
+  "storeys": 4,
+  "lift": true,
+  "site": {
+    "parking_spaces": 8,
+    "park_area": 120.0
+  },
+  "upper_floors": [
+    {
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "rooms": [
+        {
+          "id": "bed1",
+          "name": "Bedroom 1",
+          "kind": "bedroom",
+          "target_area": 14.0,
+          "zone": "rear"
+        },
+        {
+          "id": "bed2",
+          "name": "Bedroom 2",
+          "kind": "bedroom",
+          "target_area": 14.0,
+          "zone": "rear"
+        },
+        {
+          "id": "bath",
+          "name": "Shared Bathroom",
+          "kind": "bathroom",
+          "target_area": 6.0,
+          "zone": "any"
+        },
+        {
+          "id": "living",
+          "name": "Living & dining",
+          "kind": "living",
+          "target_area": 24.0,
+          "zone": "front"
+        },
+        {
+          "id": "kitchen",
+          "name": "Kitchen",
+          "kind": "kitchen",
+          "target_area": 12.0,
+          "zone": "front"
+        },
+        {
+          "id": "hall",
+          "name": "Circulation",
+          "kind": "hall",
+          "target_area": 12.0,
+          "zone": "any"
+        }
+      ]
+    }
+  ]
+}

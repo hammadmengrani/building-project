@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FORM / Architectural Studio</title><link rel="stylesheet" href="/style.css">
+    <script type="importmap">{"imports":{"three":"/vendor/three.module.js","three/addons/":"/vendor/addons/"}}
+    </script>
+  </head>
+  <body>
+    <header><a class="brand" href="/">F<span>O</span>RM<span class="slash">/</span></a>
+      <div class="brand-copy">ARCHITECTURAL STUDIO<small>AI design. Human control.</small>
+      </div>
+      <div class="project-name">Untitled residence <span id="dirty">●</span>
+      </div><span class="local-tag">LOCAL WORKSPACE</span><button id="save" class="quiet">↓ Save project</button><button id="open" class="quiet">Open</button><input id="file" type="file" accept="application/json" hidden><button id="render" class="primary">◈ Render image</button>
+    </header>
+    <main>
+      <aside class="left-panel">
+        <div class="panel-heading"><span>DESIGN BRIEF</span><span class="step">01 — CREATE</span>
+        </div>
+        <h1>A space,<br>in your words.
+        </h1>
+        <p class="muted">Describe the home. Shape the details.
+        </p><label for="prompt">Your requirements</label>
+        <textarea id="prompt" spellcheck="false">Create a new 6-floor building (ground + 5 upper floors), footprint 20 × 18 metres. Ground: gym, reception, office, shared bathroom and circulation. Each upper floor: 2 bedrooms, 1 shared bathroom, living/dining and kitchen. Add aligned stairs and a lift serving every floor. Outside: 8 parking bays with driveway, a 120 square metre park and an 8 × 4 metre swimming pool. Calculate a plot large enough for everything. Sage plaster, terracotta accents, charcoal flat roof, warm timber bedrooms and pale stone living floors. Furnish rooms and keep doors clear.
+        </textarea>
+        <div class="brief-note"><span class="dot"></span>Groq reads the brief · Local engine plans · Blender builds
+        </div><button id="generate" class="primary wide">Generate with Groq <span>↗</span></button><button id="demo" class="quiet wide">Load example residence</button><button id="multi-demo" class="quiet wide">Load 4-floor example</button>
+        <div id="connection" class="connection">Checking local services…
+        </div>
+        <div class="rule">
+        </div>
+        <div class="panel-heading"><span>SCENE COLLECTION</span><span id="object-count">0</span>
+        </div><input id="search" placeholder="Search objects…" aria-label="Search objects">
+        <div id="outliner" class="outliner">
+          <p class="muted">Your scene objects will appear here.
+          </p>
+        </div>
+        <div class="left-foot">METRES <span>•</span> MULTI-STOREY <span>•</span> Z-UP DESIGN
+        </div>
+      </aside>
+      <section class="workspace">
+        <div class="viewport-bar">
+          <div class="view-tabs" id="views"><button data-view="exterior" class="active">Exterior</button><button data-view="interior">Roof off</button><button data-view="cutaway">Cutaway</button>
+          </div>
+          <select id="floor-view" aria-label="Floor selection"><option value="all">All floors</option>
+          </select><span class="viewport-label">USER PERSPECTIVE</span><button id="fit" class="quiet small" title="Frame scene (F)">⌖ Frame</button>
+        </div>
+        <div id="viewport">
+          <div class="viewport-top">
+            <div class="shading" id="shading" role="group" aria-label="Viewport shading"><button data-mode="wireframe" title="Wireframe: inspect mesh edges">◇ <span>Wireframe</span></button><button data-mode="solid" title="Solid clay shading">● <span>Solid</span></button><button data-mode="material" title="Material preview">◐ <span>Material</span></button><button data-mode="rendered" class="active" title="Real-time rendered preview">◉ <span>Rendered</span></button>
+            </div><span id="scene-badge">EXAMPLE NOT LOADED</span>
+          </div>
+          <div class="tools" id="tools"><button data-tool="select" class="active" title="Select (Q)">↖</button><button data-tool="translate" title="Move (G)">✥</button><button data-tool="rotate" title="Rotate (R)">⟳</button><button data-tool="scale" title="Scale (S)">⤢</button>
+            <div>
+            </div><button id="undo" title="Undo (Ctrl+Z)">↶</button><button id="redo" title="Redo (Ctrl+Shift+Z)">↷</button>
+          </div>
+          <div class="axis-cube"><button data-camera="top" title="Top view">Z</button><button data-camera="front" title="Front view">Y</button><button data-camera="right" title="Right view">X</button><button data-camera="perspective" title="Perspective">3D</button>
+          </div>
+          <div id="empty">
+            <div class="empty-mark">⌂
+            </div>
+            <h2>Make room for your ideas.
+            </h2>
+            <p>Generate a design or explore the example residence.
+            </p><button id="empty-demo" class="primary">Explore example ↗</button>
+          </div>
+          <div class="viewport-bottom"><span id="selection-status">No object selected</span><span>Orbit: drag · Pan: right drag · Zoom: scroll</span>
+          </div>
+        </div>
+        <div class="statusbar"><span><i class="dot"></i><span id="status">Ready to design</span></span><span id="stats">FORM / 3D WORKSPACE</span>
+        </div>
+        <div id="notice" role="status" hidden>
+        </div>
+      </section>
+      <aside class="right-panel">
+        <div class="panel-heading"><span>PROPERTIES</span><span class="step">02 — REFINE</span>
+        </div>
+        <h2 id="object-name">Scene settings
+        </h2>
+        <p id="object-type" class="muted">Select an object to inspect its transform.
+        </p>
+        <div class="section-title">TRANSFORM <button id="reset-object" class="text-button">Reset</button>
+        </div>
+        <div id="transforms">
+        </div><label class="check"><input type="checkbox" id="snap" checked>Snap movement to 0.1 m</label>
+        <p class="help">XYZ values use viewport coordinates: Y is height. Design JSON uses Blender Z-up.
+        </p>
+        <div class="section-title">SURFACE
+        </div><label class="color-row">Object tint <input type="color" id="color" value="#b9b2a5" disabled></label>
+        <p class="help">Material tint and transforms are included in project saves, GLB exports and final renders.
+        </p>
+        <div class="section-title">VIEWPORT
+        </div><label class="check"><input type="checkbox" id="grid" checked>Ground grid & axes</label><label class="check"><input type="checkbox" id="edges">Edge overlay</label><label class="check"><input type="checkbox" id="shadows" checked>Sun shadows</label><label class="range-label">Exposure <output id="exposure-value">1.0</output><input type="range" id="exposure" min="0.3" max="2" value="1" step="0.05"></label><label class="range-label">Sun angle <output id="sun-value">35°</output><input type="range" id="sun" min="0" max="180" value="35" step="1"></label>
+        <div class="section-title">PROJECT OUTPUT
+        </div><button id="export-glb" class="quiet wide">↓ Export current GLB</button><button id="export-blend" class="quiet wide">↓ Build & download .blend</button><button id="screenshot" class="quiet wide">↓ Viewport screenshot</button>
+        <p class="help">Rendered preview is interactive. Render image runs Blender Cycles for a separate final image.
+        </p>
+        <div class="section-title">DESIGN DETAILS
+        </div>
+        <div id="design-details" class="help">No design loaded.
+        </div>
+      </aside>
+    </main>
+    <dialog id="render-dialog">
+      <div class="dialog-header">
+        <h2>Cycles render
+        </h2><button id="close-dialog" class="quiet">✕</button>
+      </div><img id="render-image" alt="Architectural render"><a id="download-render" class="primary" download="residence-render.png">↓ Download image</a>
+    </dialog>
+    <script type="module" src="/app.js">
+    </script>
+  </body>
+</html>

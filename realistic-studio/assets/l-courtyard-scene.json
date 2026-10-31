@@ -1,0 +1,425 @@
+{
+  "width": 14.0,
+  "depth": 12.0,
+  "wall_color": {
+    "r": 0.18,
+    "g": 0.31,
+    "b": 0.25
+  },
+  "accent_color": {
+    "r": 0.66,
+    "g": 0.23,
+    "b": 0.12
+  },
+  "roof_color": {
+    "r": 0.09,
+    "g": 0.1,
+    "b": 0.11
+  },
+  "rooms": [
+    {
+      "id": "bath",
+      "name": "Shared Bathroom",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 3.38,
+      "depth": 1.9279,
+      "height": 3.2,
+      "floor_color": {
+        "r": 0.78,
+        "g": 0.76,
+        "b": 0.7
+      },
+      "kind": "bathroom"
+    },
+    {
+      "id": "bed1",
+      "name": "Bedroom 1",
+      "x": 0.0,
+      "y": 1.9279,
+      "width": 3.38,
+      "depth": 5.036,
+      "height": 3.2,
+      "floor_color": {
+        "r": 0.45,
+        "g": 0.3,
+        "b": 0.18
+      },
+      "kind": "bedroom"
+    },
+    {
+      "id": "bed2",
+      "name": "Bedroom 2",
+      "x": 0.0,
+      "y": 6.9639,
+      "width": 3.38,
+      "depth": 5.0361,
+      "height": 3.2,
+      "floor_color": {
+        "r": 0.45,
+        "g": 0.3,
+        "b": 0.18
+      },
+      "kind": "bedroom"
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "x": 5.18,
+      "y": 0.0,
+      "width": 2.9025,
+      "depth": 4.44,
+      "height": 3.2,
+      "floor_color": {
+        "r": 0.78,
+        "g": 0.76,
+        "b": 0.7
+      },
+      "kind": "kitchen"
+    },
+    {
+      "id": "living",
+      "name": "Living & dining",
+      "x": 8.0825,
+      "y": 0.0,
+      "width": 5.9175,
+      "depth": 4.44,
+      "height": 3.2,
+      "floor_color": {
+        "r": 0.78,
+        "g": 0.76,
+        "b": 0.7
+      },
+      "kind": "living"
+    },
+    {
+      "id": "hall",
+      "name": "Circulation",
+      "x": 3.38,
+      "y": 0.0,
+      "width": 1.8,
+      "depth": 12.0,
+      "height": 3.2,
+      "floor_color": {
+        "r": 0.78,
+        "g": 0.76,
+        "b": 0.7
+      },
+      "kind": "hall"
+    },
+    {
+      "id": "circulation_2",
+      "name": "Circulation 2",
+      "x": 5.18,
+      "y": 4.44,
+      "width": 8.82,
+      "depth": 1.8,
+      "height": 3.2,
+      "floor_color": {
+        "r": 0.78,
+        "g": 0.76,
+        "b": 0.7
+      },
+      "kind": "hall"
+    }
+  ],
+  "openings": [
+    {
+      "id": "door_1",
+      "kind": "door",
+      "axis": "y",
+      "x": 5.18,
+      "y": 5.137,
+      "width": 0.9,
+      "bottom": 0.0,
+      "height": 2.2,
+      "entrance": false
+    },
+    {
+      "id": "door_2",
+      "kind": "door",
+      "axis": "y",
+      "x": 3.38,
+      "y": 0.7162,
+      "width": 0.9,
+      "bottom": 0.0,
+      "height": 2.2,
+      "entrance": false
+    },
+    {
+      "id": "door_3",
+      "kind": "door",
+      "axis": "y",
+      "x": 3.38,
+      "y": 3.1103,
+      "width": 0.9,
+      "bottom": 0.0,
+      "height": 2.2,
+      "entrance": false
+    },
+    {
+      "id": "door_4",
+      "kind": "door",
+      "axis": "y",
+      "x": 3.38,
+      "y": 8.1463,
+      "width": 0.9,
+      "bottom": 0.0,
+      "height": 2.2,
+      "entrance": false
+    },
+    {
+      "id": "door_5",
+      "kind": "door",
+      "axis": "y",
+      "x": 5.18,
+      "y": 1.093,
+      "width": 0.9,
+      "bottom": 0.0,
+      "height": 2.2,
+      "entrance": false
+    },
+    {
+      "id": "door_6",
+      "kind": "door",
+      "axis": "x",
+      "x": 9.3971,
+      "y": 4.44,
+      "width": 0.9,
+      "bottom": 0.0,
+      "height": 2.2,
+      "entrance": false
+    },
+    {
+      "id": "entrance",
+      "kind": "door",
+      "axis": "x",
+      "x": 4.28,
+      "y": 0.0,
+      "width": 1.0,
+      "bottom": 0.0,
+      "height": 2.2,
+      "entrance": true
+    },
+    {
+      "id": "window_8",
+      "kind": "window",
+      "axis": "x",
+      "x": 1.69,
+      "y": 0.0,
+      "width": 2.0,
+      "bottom": 0.85,
+      "height": 1.35,
+      "entrance": false
+    },
+    {
+      "id": "window_9",
+      "kind": "window",
+      "axis": "y",
+      "x": 0.0,
+      "y": 4.4459,
+      "width": 2.0,
+      "bottom": 0.85,
+      "height": 1.35,
+      "entrance": false
+    },
+    {
+      "id": "window_10",
+      "kind": "window",
+      "axis": "y",
+      "x": 0.0,
+      "y": 9.4819,
+      "width": 2.0,
+      "bottom": 0.85,
+      "height": 1.35,
+      "entrance": false
+    },
+    {
+      "id": "window_11",
+      "kind": "window",
+      "axis": "x",
+      "x": 6.6312,
+      "y": 0.0,
+      "width": 2.0,
+      "bottom": 0.85,
+      "height": 1.35,
+      "entrance": false
+    },
+    {
+      "id": "window_12",
+      "kind": "window",
+      "axis": "x",
+      "x": 11.0412,
+      "y": 0.0,
+      "width": 2.0,
+      "bottom": 0.85,
+      "height": 1.35,
+      "entrance": false
+    }
+  ],
+  "furniture": [
+    {
+      "id": "bath_f1",
+      "room_id": "bath",
+      "kind": "shower",
+      "x": 0.65,
+      "y": 0.65,
+      "width": 0.9,
+      "depth": 0.9,
+      "height": 0.08,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.9,
+        "g": 0.9,
+        "b": 0.87
+      }
+    },
+    {
+      "id": "bath_f2",
+      "room_id": "bath",
+      "kind": "toilet",
+      "x": 1.69,
+      "y": 0.55,
+      "width": 0.5,
+      "depth": 0.7,
+      "height": 0.75,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.9,
+        "g": 0.9,
+        "b": 0.87
+      }
+    },
+    {
+      "id": "bath_f3",
+      "room_id": "bath",
+      "kind": "basin",
+      "x": 0.5,
+      "y": 1.4779,
+      "width": 0.6,
+      "depth": 0.5,
+      "height": 0.85,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.9,
+        "g": 0.9,
+        "b": 0.87
+      }
+    },
+    {
+      "id": "bed1_f1",
+      "room_id": "bed1",
+      "kind": "bed",
+      "x": 2.18,
+      "y": 4.8254,
+      "width": 1.6,
+      "depth": 2.0,
+      "height": 0.65,
+      "rotation_deg": 90.0,
+      "color": {
+        "r": 0.65,
+        "g": 0.27,
+        "b": 0.13
+      }
+    },
+    {
+      "id": "bed1_f2",
+      "room_id": "bed1",
+      "kind": "wardrobe",
+      "x": 2.58,
+      "y": 6.4639,
+      "width": 1.2,
+      "depth": 0.6,
+      "height": 2.1,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.66,
+        "g": 0.23,
+        "b": 0.12
+      }
+    },
+    {
+      "id": "bed2_f1",
+      "room_id": "bed2",
+      "kind": "bed",
+      "x": 2.18,
+      "y": 9.8615,
+      "width": 1.6,
+      "depth": 2.0,
+      "height": 0.65,
+      "rotation_deg": 90.0,
+      "color": {
+        "r": 0.65,
+        "g": 0.27,
+        "b": 0.13
+      }
+    },
+    {
+      "id": "bed2_f2",
+      "room_id": "bed2",
+      "kind": "wardrobe",
+      "x": 2.58,
+      "y": 11.5,
+      "width": 1.2,
+      "depth": 0.6,
+      "height": 2.1,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.66,
+        "g": 0.23,
+        "b": 0.12
+      }
+    },
+    {
+      "id": "kitchen_f1",
+      "room_id": "kitchen",
+      "kind": "kitchen",
+      "x": 6.8825,
+      "y": 2.22,
+      "width": 2.0,
+      "depth": 0.6,
+      "height": 0.9,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.66,
+        "g": 0.23,
+        "b": 0.12
+      }
+    },
+    {
+      "id": "living_f1",
+      "room_id": "living",
+      "kind": "sofa",
+      "x": 8.7325,
+      "y": 1.2,
+      "width": 0.9,
+      "depth": 2.0,
+      "height": 0.85,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.65,
+        "g": 0.27,
+        "b": 0.13
+      }
+    },
+    {
+      "id": "living_f2",
+      "room_id": "living",
+      "kind": "table",
+      "x": 11.0412,
+      "y": 2.22,
+      "width": 1.0,
+      "depth": 1.3,
+      "height": 0.75,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.65,
+        "g": 0.27,
+        "b": 0.13
+      }
+    }
+  ],
+  "shape": "L",
+  "courtyard_corner": "rear-right",
+  "layout_variant": 0
+}
