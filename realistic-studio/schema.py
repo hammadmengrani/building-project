@@ -21,12 +21,29 @@ class Data(BaseModel):
                     result[name] = float(text)
         return result
 
+InteriorStyle = Literal['modern', 'traditional', 'industrial', 'coastal', 'minimalist']
+
 class Color(Data):
     r: float
     g: float
     b: float
 
+class MaterialFinish(Data):
+    finish: Literal['plain','oak','walnut','stone','marble','concrete','linen','leather','plaster','ceramic'] | None = None
+    color: Color | None = None
+    roughness: float | None = Field(default=None, ge=0.05, le=1.0)
+    repeat_m: float | None = Field(default=None, ge=0.1, le=10.0)
+
+class MaterialPalette(Data):
+    wood: MaterialFinish | None = None
+    upholstery: MaterialFinish | None = None
+    stone: MaterialFinish | None = None
+    curtain: MaterialFinish | None = None
+    floor: MaterialFinish | None = None
+    wall: MaterialFinish | None = None
+
 class Room(Data):
+    materials: MaterialPalette | None = None
     id: str
     name: str
     x: float
@@ -36,6 +53,8 @@ class Room(Data):
     height: float
     floor_color: Color
     kind: str | None = Field(default=None,max_length=32)
+    interior_style: InteriorStyle = 'modern'
+    furniture_scale: float = Field(default=1.0, ge=0.75, le=1.25)
 
 class Opening(Data):
     id: str
@@ -49,6 +68,7 @@ class Opening(Data):
     entrance: bool
 
 class Furniture(Data):
+    design_variant: int = Field(default=0, ge=0, le=2)
     id: str
     room_id: str
     kind: Literal['bed', 'sofa', 'table', 'chair', 'kitchen', 'wardrobe', 'toilet', 'basin', 'shower', 'plant', 'box', 'cylinder', 'treadmill', 'exercise_bike', 'weight_rack', 'bench', 'car']
@@ -93,6 +113,8 @@ class SitePlan(SiteRect):
     pool: SiteRect | None = None
 
 class Scene(Data):
+    materials: MaterialPalette | None = None
+    interior_style: InteriorStyle = 'modern'
     width: float
     depth: float
     wall_color: Color

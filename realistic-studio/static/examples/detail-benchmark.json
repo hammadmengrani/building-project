@@ -1,0 +1,264 @@
+{
+  "materials": {
+    "wood": {
+      "finish": "oak",
+      "color": {
+        "r": 0.57,
+        "g": 0.41,
+        "b": 0.24
+      },
+      "roughness": null,
+      "repeat_m": null
+    },
+    "upholstery": {
+      "finish": "linen",
+      "color": {
+        "r": 0.32,
+        "g": 0.43,
+        "b": 0.39
+      },
+      "roughness": null,
+      "repeat_m": null
+    },
+    "stone": null,
+    "curtain": {
+      "finish": "linen",
+      "color": {
+        "r": 0.9,
+        "g": 0.87,
+        "b": 0.78
+      },
+      "roughness": null,
+      "repeat_m": null
+    },
+    "floor": null,
+    "wall": null
+  },
+  "interior_style": "coastal",
+  "width": 6.0,
+  "depth": 5.0,
+  "wall_color": {
+    "r": 0.79,
+    "g": 0.78,
+    "b": 0.72
+  },
+  "accent_color": {
+    "r": 0.3,
+    "g": 0.2,
+    "b": 0.12
+  },
+  "roof_color": {
+    "r": 0.26,
+    "g": 0.28,
+    "b": 0.29
+  },
+  "rooms": [
+    {
+      "materials": null,
+      "id": "bedroom",
+      "name": "Bedroom",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 4.0,
+      "depth": 5.0,
+      "height": 3.0,
+      "floor_color": {
+        "r": 0.65,
+        "g": 0.5,
+        "b": 0.32
+      },
+      "kind": "bedroom",
+      "interior_style": "coastal",
+      "furniture_scale": 1.0
+    },
+    {
+      "materials": null,
+      "id": "hall",
+      "name": "Entry",
+      "x": 4.0,
+      "y": 0.0,
+      "width": 2.0,
+      "depth": 2.0,
+      "height": 3.0,
+      "floor_color": {
+        "r": 0.67,
+        "g": 0.69,
+        "b": 0.68
+      },
+      "kind": "hall",
+      "interior_style": "coastal",
+      "furniture_scale": 1.0
+    },
+    {
+      "materials": null,
+      "id": "bath",
+      "name": "Bathroom",
+      "x": 4.0,
+      "y": 2.0,
+      "width": 2.0,
+      "depth": 3.0,
+      "height": 3.0,
+      "floor_color": {
+        "r": 0.67,
+        "g": 0.69,
+        "b": 0.68
+      },
+      "kind": "bathroom",
+      "interior_style": "coastal",
+      "furniture_scale": 1.0
+    }
+  ],
+  "openings": [
+    {
+      "id": "entrance",
+      "kind": "door",
+      "axis": "x",
+      "x": 5.0,
+      "y": 0.0,
+      "width": 0.9,
+      "bottom": 0.0,
+      "height": 2.2,
+      "entrance": true
+    },
+    {
+      "id": "beddoor",
+      "kind": "door",
+      "axis": "y",
+      "x": 4.0,
+      "y": 1.0,
+      "width": 0.9,
+      "bottom": 0.0,
+      "height": 2.2,
+      "entrance": false
+    },
+    {
+      "id": "bathdoor",
+      "kind": "door",
+      "axis": "x",
+      "x": 5.0,
+      "y": 2.0,
+      "width": 0.8,
+      "bottom": 0.0,
+      "height": 2.2,
+      "entrance": false
+    },
+    {
+      "id": "bedwindow",
+      "kind": "window",
+      "axis": "x",
+      "x": 2.0,
+      "y": 5.0,
+      "width": 1.8,
+      "bottom": 0.85,
+      "height": 1.5,
+      "entrance": false
+    },
+    {
+      "id": "bathwindow",
+      "kind": "window",
+      "axis": "y",
+      "x": 6.0,
+      "y": 3.5,
+      "width": 0.8,
+      "bottom": 1.5,
+      "height": 0.65,
+      "entrance": false
+    }
+  ],
+  "furniture": [
+    {
+      "design_variant": 0,
+      "id": "bed",
+      "room_id": "bedroom",
+      "kind": "bed",
+      "x": 2.1,
+      "y": 3.1,
+      "width": 1.7,
+      "depth": 2.1,
+      "height": 0.7,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.65,
+        "g": 0.5,
+        "b": 0.32
+      }
+    },
+    {
+      "design_variant": 0,
+      "id": "wardrobe",
+      "room_id": "bedroom",
+      "kind": "wardrobe",
+      "x": 1.4,
+      "y": 0.55,
+      "width": 1.4,
+      "depth": 0.6,
+      "height": 2.1,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.65,
+        "g": 0.5,
+        "b": 0.32
+      }
+    },
+    {
+      "design_variant": 0,
+      "id": "toilet",
+      "room_id": "bath",
+      "kind": "toilet",
+      "x": 5.4,
+      "y": 4.4,
+      "width": 0.5,
+      "depth": 0.7,
+      "height": 0.75,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.65,
+        "g": 0.5,
+        "b": 0.32
+      }
+    },
+    {
+      "design_variant": 0,
+      "id": "basin",
+      "room_id": "bath",
+      "kind": "basin",
+      "x": 4.6,
+      "y": 4.35,
+      "width": 0.6,
+      "depth": 0.5,
+      "height": 0.85,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.65,
+        "g": 0.5,
+        "b": 0.32
+      }
+    },
+    {
+      "design_variant": 0,
+      "id": "shower",
+      "room_id": "bath",
+      "kind": "shower",
+      "x": 5.35,
+      "y": 3.5,
+      "width": 0.9,
+      "depth": 0.9,
+      "height": 0.08,
+      "rotation_deg": 0.0,
+      "color": {
+        "r": 0.65,
+        "g": 0.5,
+        "b": 0.32
+      }
+    }
+  ],
+  "shape": null,
+  "courtyard_corner": null,
+  "layout_variant": 0,
+  "storeys": 1,
+  "storey_height": 3.45,
+  "upper_floors": [],
+  "vertical_core": null,
+  "site": null,
+  "access_roots": []
+}

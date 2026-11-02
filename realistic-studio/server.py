@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 from schema import Scene
 from geometry import validate
 from one_shot import design
+from provider_errors import rate_limit_message
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT.parent / '.env')
 load_dotenv(ROOT / '.env', override=True)
@@ -123,8 +124,10 @@ def run_job(job_id, kind, payload):
     except Exception as exc:
         # Provider errors may include request details; do not return SDK dumps or secrets.
         name = type(exc).__name__
-        if name in ('RateLimitError', 'APIConnectionError', 'APIStatusError', 'AuthenticationError'):
-            message = {'RateLimitError': 'Groq quota/rate limit reached. No automatic retry was sent.', 'APIConnectionError': 'Could not connect to Groq. No automatic retry was sent.', 'AuthenticationError': 'Groq API key was rejected. Check the parent .env.', 'APIStatusError': 'Groq request failed. Check model access and account status.'}[name]
+        if name == 'RateLimitError':
+            message = rate_limit_message(exc)
+        elif name in ('APIConnectionError', 'APIStatusError', 'AuthenticationError'):
+            message = {'APIConnectionError': 'Could not connect to Groq. No automatic retry was sent.', 'AuthenticationError': 'Groq API key was rejected. Check the parent .env.', 'APIStatusError': 'Groq request failed. Check model access and account status.'}[name]
         else:
             message = str(exc)[:5000]
         job_update(job_id, status='failed', message=message, packet=packet)

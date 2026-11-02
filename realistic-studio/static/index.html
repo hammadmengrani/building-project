@@ -9,7 +9,7 @@
       <div class="brand-copy">ARCHITECTURAL STUDIO<small>AI design. Human control.</small>
       </div>
       <div class="project-name">Untitled residence <span id="dirty">●</span>
-      </div><span class="local-tag">LOCAL WORKSPACE</span><button id="save" class="quiet">↓ Save project</button><button id="open" class="quiet">Open</button><input id="file" type="file" accept="application/json" hidden><button id="render" class="primary">◈ Render image</button>
+      </div><span class="local-tag">LOCAL WORKSPACE</span><a href="/ar/index.html" class="quiet" style="padding:12px;text-decoration:none">◎ Webcam AR</a><button id="save" class="quiet">↓ Save project</button><button id="open" class="quiet">Open</button><input id="file" type="file" accept="application/json" hidden><button id="render" class="primary">◈ Render image</button>
     </header>
     <main>
       <aside class="left-panel">
@@ -22,7 +22,8 @@
         <textarea id="prompt" spellcheck="false">Create a new 6-floor building (ground + 5 upper floors), footprint 20 × 18 metres. Ground: gym, reception, office, shared bathroom and circulation. Each upper floor: 2 bedrooms, 1 shared bathroom, living/dining and kitchen. Add aligned stairs and a lift serving every floor. Outside: 8 parking bays with driveway, a 120 square metre park and an 8 × 4 metre swimming pool. Calculate a plot large enough for everything. Sage plaster, terracotta accents, charcoal flat roof, warm timber bedrooms and pale stone living floors. Furnish rooms and keep doors clear.
         </textarea>
         <div class="brief-note"><span class="dot"></span>Groq reads the brief · Local engine plans · Blender builds
-        </div><button id="generate" class="primary wide">Generate with Groq <span>↗</span></button><button id="demo" class="quiet wide">Load example residence</button><button id="multi-demo" class="quiet wide">Load 4-floor example</button>
+        </div><button id="generate" class="primary wide">Generate with Groq <span>↗</span></button><button id="demo" class="quiet wide">Load example residence</button><button id="detail-demo" class="quiet wide">Load detailed room</button>
+        <button id="multi-demo" class="quiet wide">Load 4-floor example</button>
         <div id="connection" class="connection">Checking local services…
         </div>
         <div class="rule">
@@ -41,7 +42,7 @@
           <div class="view-tabs" id="views"><button data-view="exterior" class="active">Exterior</button><button data-view="interior">Roof off</button><button data-view="cutaway">Cutaway</button>
           </div>
           <select id="floor-view" aria-label="Floor selection"><option value="all">All floors</option>
-          </select><span class="viewport-label">USER PERSPECTIVE</span><button id="fit" class="quiet small" title="Frame scene (F)">⌖ Frame</button>
+          </select><span class="viewport-label" id="view-mode-label">FINISHED / RENDERED</span><button id="normal-view" class="quiet small">Back to building</button><button id="fit" class="quiet small" title="Frame scene (F)">⌖ Frame</button>
         </div>
         <div id="viewport">
           <div class="viewport-top">
@@ -87,6 +88,27 @@
         </div><label class="color-row">Object tint <input type="color" id="color" value="#b9b2a5" disabled></label>
         <p class="help">Material tint and transforms are included in project saves, GLB exports and final renders.
         </p>
+        <div class="section-title">INTERIOR CAMERA</div>
+        <select id="room-camera" aria-label="Room camera"></select>
+        <label class="check"><input type="checkbox" id="ceilings-view">Show ceilings in room view</label>
+        <button id="rebuild-interior" class="quiet wide">Rebuild interior + services</button>
+        <button id="enter-room" class="quiet wide">Enter selected room</button>
+        <div class="section-title">CONSTRUCTION CONCEPT</div>
+        <select id="construction-view" aria-label="Construction stage"><option value="finished">Finished architecture</option><option value="frame">Concrete frame</option><option value="rebar">Column rebar cages</option><option value="formwork">Column shuttering</option></select>
+        <a id="construction-report" class="quiet wide" download="construction-concept.json">Download concept quantities</a>
+        <p class="help">Assumed frame sizes and column cages only. Beam/slab reinforcement and structural analysis are not included. Not a procurement BOQ.</p>
+        <div class="section-title">ELECTRICAL CONCEPT</div>
+        <label class="check"><input type="checkbox" id="electrical-view">Show electrical routes</label>
+        <label class="check"><input type="checkbox" id="electrical-isolate">Isolate selected services</label>
+        <a id="electrical-report" class="quiet wide" download="electrical-concept.json">Download concept circuit report</a>
+        <p class="help">Amber: lighting · Blue: power. Concept topology only; routes may cross walls. No cable/breaker sizing, wet-area circuits or engineer approval.</p>
+        <div class="section-title">PLUMBING CONCEPT</div>
+        <label class="check"><input type="checkbox" id="cold-view">Cold water · cyan</label>
+        <label class="check"><input type="checkbox" id="hot-view">Hot water · red</label>
+        <label class="check"><input type="checkbox" id="drain-view">Drainage · brown</label>
+        <button id="show-services" class="quiet wide">Show all services clearly</button>
+        <a id="plumbing-report" class="quiet wide" download="plumbing-concept.json">Download plumbing concept</a>
+        <p class="help">Concept connections only; routes may cross walls. Drain slope, pipe sizes, venting and external water/sewer connections need engineering design.</p>
         <div class="section-title">VIEWPORT
         </div><label class="check"><input type="checkbox" id="grid" checked>Ground grid & axes</label><label class="check"><input type="checkbox" id="edges">Edge overlay</label><label class="check"><input type="checkbox" id="shadows" checked>Sun shadows</label><label class="range-label">Exposure <output id="exposure-value">1.0</output><input type="range" id="exposure" min="0.3" max="2" value="1" step="0.05"></label><label class="range-label">Sun angle <output id="sun-value">35°</output><input type="range" id="sun" min="0" max="180" value="35" step="1"></label>
         <div class="section-title">PROJECT OUTPUT

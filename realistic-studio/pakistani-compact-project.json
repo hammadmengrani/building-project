@@ -1,0 +1,515 @@
+{
+  "version": 1,
+  "scene": {
+    "materials": {
+      "wood": {
+        "finish": "walnut",
+        "color": {
+          "r": 0.35,
+          "g": 0.19,
+          "b": 0.09
+        },
+        "roughness": null,
+        "repeat_m": null
+      },
+      "upholstery": {
+        "finish": "linen",
+        "color": {
+          "r": 0.61,
+          "g": 0.26,
+          "b": 0.15
+        },
+        "roughness": null,
+        "repeat_m": null
+      },
+      "stone": null,
+      "curtain": null,
+      "floor": null,
+      "wall": null
+    },
+    "interior_style": "modern",
+    "width": 7.0,
+    "depth": 10.0,
+    "wall_color": {
+      "r": 0.26,
+      "g": 0.37,
+      "b": 0.43
+    },
+    "accent_color": {
+      "r": 0.49,
+      "g": 0.29,
+      "b": 0.16
+    },
+    "roof_color": {
+      "r": 0.1,
+      "g": 0.12,
+      "b": 0.14
+    },
+    "rooms": [
+      {
+        "materials": null,
+        "id": "kitchen",
+        "name": "Kitchen",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1.768,
+        "depth": 3.3922,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "kitchen",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": null,
+        "id": "living",
+        "name": "Living & dining",
+        "x": 0.0,
+        "y": 3.3922,
+        "width": 1.768,
+        "depth": 6.6078,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "living",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": null,
+        "id": "bath",
+        "name": "Shared Bathroom",
+        "x": 3.568,
+        "y": 0.0,
+        "width": 3.432,
+        "depth": 1.755,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "bathroom",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": {
+          "wood": {
+            "finish": "oak",
+            "color": {
+              "r": 0.64,
+              "g": 0.48,
+              "b": 0.29
+            },
+            "roughness": null,
+            "repeat_m": null
+          },
+          "upholstery": {
+            "finish": "linen",
+            "color": {
+              "r": 0.38,
+              "g": 0.49,
+              "b": 0.39
+            },
+            "roughness": null,
+            "repeat_m": null
+          },
+          "stone": null,
+          "curtain": null,
+          "floor": null,
+          "wall": null
+        },
+        "id": "bed1",
+        "name": "Bedroom 1",
+        "x": 3.568,
+        "y": 1.755,
+        "width": 3.432,
+        "depth": 4.1225,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.45,
+          "g": 0.3,
+          "b": 0.18
+        },
+        "kind": "bedroom",
+        "interior_style": "coastal",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": {
+          "wood": {
+            "finish": "oak",
+            "color": {
+              "r": 0.64,
+              "g": 0.48,
+              "b": 0.29
+            },
+            "roughness": null,
+            "repeat_m": null
+          },
+          "upholstery": {
+            "finish": "linen",
+            "color": {
+              "r": 0.38,
+              "g": 0.49,
+              "b": 0.39
+            },
+            "roughness": null,
+            "repeat_m": null
+          },
+          "stone": null,
+          "curtain": null,
+          "floor": null,
+          "wall": null
+        },
+        "id": "bed2",
+        "name": "Bedroom 2",
+        "x": 3.568,
+        "y": 5.8775,
+        "width": 3.432,
+        "depth": 4.1225,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.45,
+          "g": 0.3,
+          "b": 0.18
+        },
+        "kind": "bedroom",
+        "interior_style": "coastal",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": null,
+        "id": "hall",
+        "name": "Circulation",
+        "x": 1.768,
+        "y": 0.0,
+        "width": 1.8,
+        "depth": 10.0,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "hall",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      }
+    ],
+    "openings": [
+      {
+        "id": "door_1",
+        "kind": "door",
+        "axis": "y",
+        "x": 1.768,
+        "y": 0.9358,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_2",
+        "kind": "door",
+        "axis": "y",
+        "x": 1.768,
+        "y": 4.8104,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_3",
+        "kind": "door",
+        "axis": "y",
+        "x": 3.568,
+        "y": 0.6903,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_4",
+        "kind": "door",
+        "axis": "y",
+        "x": 3.568,
+        "y": 2.8004,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_5",
+        "kind": "door",
+        "axis": "y",
+        "x": 3.568,
+        "y": 6.9229,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "entrance",
+        "kind": "door",
+        "axis": "x",
+        "x": 2.668,
+        "y": 0.0,
+        "width": 1.0,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": true
+      },
+      {
+        "id": "window_7",
+        "kind": "window",
+        "axis": "y",
+        "x": 0.0,
+        "y": 1.6961,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "window_8",
+        "kind": "window",
+        "axis": "y",
+        "x": 0.0,
+        "y": 6.6961,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "window_9",
+        "kind": "window",
+        "axis": "x",
+        "x": 5.284,
+        "y": 0.0,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "window_10",
+        "kind": "window",
+        "axis": "y",
+        "x": 7.0,
+        "y": 3.8162,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "window_11",
+        "kind": "window",
+        "axis": "y",
+        "x": 7.0,
+        "y": 7.9388,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      }
+    ],
+    "furniture": [
+      {
+        "design_variant": 0,
+        "id": "kitchen_f1",
+        "room_id": "kitchen",
+        "kind": "kitchen",
+        "x": 0.5,
+        "y": 2.1922,
+        "width": 2.0,
+        "depth": 0.6,
+        "height": 0.9,
+        "rotation_deg": 90.0,
+        "color": {
+          "r": 0.49,
+          "g": 0.29,
+          "b": 0.16
+        }
+      },
+      {
+        "design_variant": 1,
+        "id": "living_f1",
+        "room_id": "living",
+        "kind": "sofa",
+        "x": 0.65,
+        "y": 6.6961,
+        "width": 0.9,
+        "depth": 2.0,
+        "height": 0.85,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "design_variant": 2,
+        "id": "living_f2",
+        "room_id": "living",
+        "kind": "table",
+        "x": 0.884,
+        "y": 8.5365,
+        "width": 1.0,
+        "depth": 1.3,
+        "height": 0.75,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "design_variant": 0,
+        "id": "bath_f1",
+        "room_id": "bath",
+        "kind": "shower",
+        "x": 5.0175,
+        "y": 0.65,
+        "width": 0.9,
+        "depth": 0.9,
+        "height": 0.08,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "design_variant": 1,
+        "id": "bath_f2",
+        "room_id": "bath",
+        "kind": "toilet",
+        "x": 5.917,
+        "y": 0.55,
+        "width": 0.5,
+        "depth": 0.7,
+        "height": 0.75,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "design_variant": 2,
+        "id": "bath_f3",
+        "room_id": "bath",
+        "kind": "basin",
+        "x": 5.892,
+        "y": 1.305,
+        "width": 0.6,
+        "depth": 0.5,
+        "height": 0.85,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "design_variant": 0,
+        "id": "bed1_f1",
+        "room_id": "bed1",
+        "kind": "bed",
+        "x": 4.568,
+        "y": 4.4622,
+        "width": 1.6,
+        "depth": 2.0,
+        "height": 0.65,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "design_variant": 1,
+        "id": "bed1_f2",
+        "room_id": "bed1",
+        "kind": "wardrobe",
+        "x": 6.2,
+        "y": 5.3775,
+        "width": 1.2,
+        "depth": 0.6,
+        "height": 2.1,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.49,
+          "g": 0.29,
+          "b": 0.16
+        }
+      },
+      {
+        "design_variant": 2,
+        "id": "bed2_f1",
+        "room_id": "bed2",
+        "kind": "bed",
+        "x": 4.568,
+        "y": 8.5847,
+        "width": 1.6,
+        "depth": 2.0,
+        "height": 0.65,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "design_variant": 0,
+        "id": "bed2_f2",
+        "room_id": "bed2",
+        "kind": "wardrobe",
+        "x": 5.284,
+        "y": 6.3775,
+        "width": 1.2,
+        "depth": 0.6,
+        "height": 2.1,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.49,
+          "g": 0.29,
+          "b": 0.16
+        }
+      }
+    ],
+    "shape": "rectangle",
+    "courtyard_corner": "rear-right",
+    "layout_variant": 0,
+    "storeys": 1,
+    "storey_height": 3.45,
+    "upper_floors": [],
+    "vertical_core": null,
+    "site": null,
+    "access_roots": []
+  },
+  "edits": {},
+  "prompt": "Compact Pakistani house: 7 x 10m footprint, single storey, 2 bedrooms, 1 shared bathroom, living/dining, kitchen and circulation. Slate-blue exterior, walnut/rust living room, coastal oak/sage bedrooms. Local validated test project; no Groq call needed to open/build."
+}

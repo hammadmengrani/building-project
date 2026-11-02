@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>FORM / AR tracker fixture check</title><script type="importmap">{"imports":{"three":"/vendor/three.module.js"}}</script><style>body{font:16px system-ui;background:#f6f4ee;color:#315442;padding:40px;max-width:800px;margin:auto}img{width:300px;background:white}p{line-height:1.7}a{color:inherit}</style></head><body><h1>Marker tracker fixture check</h1><p>This diagnostic checks the real AR.js detector against the included Hiro image. It does not test a live webcam or claim camera calibration accuracy.</p><p id="result" role="status">Initializing tracker…</p><img id="fixture" src="./assets/hiro.png" alt="Hiro test input"><p><a href="./index.html">Back to AR Lab</a></p><script type="module">
+import * as THREE from 'three';
+import {ArToolkitContext,ArMarkerControls} from './vendor/ar-threex.mjs';
+const result=document.querySelector('#result'),image=document.querySelector('#fixture');
+try{
+ await image.decode();const context=new ArToolkitContext({cameraParametersUrl:'./assets/camera_para.dat',detectionMode:'mono',canvasWidth:640,canvasHeight:480,maxDetectionRate:30});
+ await new Promise(resolve=>context.init(resolve));const root=new THREE.Group();root.visible=false;
+ const controls=new ArMarkerControls(context,root,{type:'pattern',patternUrl:'./assets/patt.hiro',size:1});
+ const canvas=document.createElement('canvas');canvas.width=640;canvas.height=480;const ctx=canvas.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,640,480);ctx.drawImage(image,160,80,320,320);
+ const deadline=performance.now()+15000;const timer=setInterval(()=>{context.update(canvas);if(root.visible){clearInterval(timer);result.textContent='PASS — official Hiro marker detected, pose matrix finite: '+root.matrix.elements.every(Number.isFinite);result.dataset.result='pass';}else if(performance.now()>deadline){clearInterval(timer);result.textContent='FAIL — marker was not detected within 15 seconds.';result.dataset.result='fail';}},80);
+}catch(error){result.textContent='FAIL — '+error.message;result.dataset.result='fail';}
+</script></body></html>
