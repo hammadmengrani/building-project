@@ -18,9 +18,97 @@
         <h1>A space,<br>in your words.
         </h1>
         <p class="muted">Describe the home. Shape the details.
-        </p><label for="prompt">Your requirements</label>
-        <textarea id="prompt" spellcheck="false">Create a new 6-floor building (ground + 5 upper floors), footprint 20 × 18 metres. Ground: gym, reception, office, shared bathroom and circulation. Each upper floor: 2 bedrooms, 1 shared bathroom, living/dining and kitchen. Add aligned stairs and a lift serving every floor. Outside: 8 parking bays with driveway, a 120 square metre park and an 8 × 4 metre swimming pool. Calculate a plot large enough for everything. Sage plaster, terracotta accents, charcoal flat roof, warm timber bedrooms and pale stone living floors. Furnish rooms and keep doors clear.
-        </textarea>
+        </p>
+        <form id="guided-brief" class="guided-brief" novalidate>
+          <label for="building-width">Building footprint (outer dimensions)</label>
+        <div class="field-row dimensions-row">
+          <input id="building-width" type="number" min="0.1" step="any" placeholder="Width" aria-label="Building width" required>
+            <span class="dimension-by">×</span>
+            <input id="building-depth" type="number" min="0.1" step="any" placeholder="Depth" aria-label="Building depth" required>
+            <select id="building-unit" aria-label="Dimension units"><option value="m">m</option><option value="ft">ft</option></select>
+          </div>
+          <p class="field-hint">Enter the house width and depth, including exterior walls. These are not plot dimensions.</p>
+          <label for="floor-count">How many floors?</label>
+          <input id="floor-count" type="number" min="1" max="60" step="1" placeholder="e.g. 2" required>
+          <label for="floor-layout">Room layout on each floor</label>
+          <select id="floor-layout">
+            <option value="same">Same rooms on every floor</option>
+            <option value="different">Ground floor differs from upper floors</option>
+          </select>
+          <div id="same-floor-program">
+            <label>Exact room counts per floor</label>
+            <div class="room-count-grid" data-program="same">
+              <label for="same-bedrooms">Bedrooms<input id="same-bedrooms" type="number" min="0" max="20" step="1" value="2"></label>
+              <label for="same-bathrooms">Shared bathrooms<input id="same-bathrooms" type="number" min="0" max="20" step="1" value="1"></label>
+              <label for="same-kitchens">Kitchens<input id="same-kitchens" type="number" min="0" max="20" step="1" value="1"></label>
+              <label for="same-living">Living rooms<input id="same-living" type="number" min="0" max="20" step="1" value="0"></label>
+              <label for="same-dining">Dining rooms<input id="same-dining" type="number" min="0" max="20" step="1" value="0"></label>
+              <label for="same-offices">Offices / studies<input id="same-offices" type="number" min="0" max="20" step="1" value="0"></label>
+            </div>
+            <label for="same-other-rooms">Other rooms <span class="field-hint">Optional; include a count, e.g. 1 laundry room</span></label>
+            <input id="same-other-rooms" type="text" placeholder="e.g. 1 storage room">
+          </div>
+          <div id="different-floor-program" hidden>
+            <label>Exact ground-floor room counts</label>
+            <div class="room-count-grid" data-program="ground">
+              <label for="ground-bedrooms">Bedrooms<input id="ground-bedrooms" type="number" min="0" max="20" step="1" value="0"></label>
+              <label for="ground-bathrooms">Shared bathrooms<input id="ground-bathrooms" type="number" min="0" max="20" step="1" value="1"></label>
+              <label for="ground-kitchens">Kitchens<input id="ground-kitchens" type="number" min="0" max="20" step="1" value="1"></label>
+              <label for="ground-living">Living rooms<input id="ground-living" type="number" min="0" max="20" step="1" value="1"></label>
+              <label for="ground-dining">Dining rooms<input id="ground-dining" type="number" min="0" max="20" step="1" value="0"></label>
+              <label for="ground-offices">Offices / studies<input id="ground-offices" type="number" min="0" max="20" step="1" value="0"></label>
+            </div>
+            <label for="ground-other-rooms">Other ground-floor rooms <span class="field-hint">Optional; include a count</span></label>
+            <input id="ground-other-rooms" type="text" placeholder="e.g. 1 laundry room">
+            <label>Exact room counts on each upper floor</label>
+            <div class="room-count-grid" data-program="upper">
+              <label for="upper-bedrooms">Bedrooms<input id="upper-bedrooms" type="number" min="0" max="20" step="1" value="2"></label>
+              <label for="upper-bathrooms">Shared bathrooms<input id="upper-bathrooms" type="number" min="0" max="20" step="1" value="1"></label>
+              <label for="upper-kitchens">Kitchens<input id="upper-kitchens" type="number" min="0" max="20" step="1" value="1"></label>
+              <label for="upper-living">Living rooms<input id="upper-living" type="number" min="0" max="20" step="1" value="0"></label>
+              <label for="upper-dining">Dining rooms<input id="upper-dining" type="number" min="0" max="20" step="1" value="0"></label>
+              <label for="upper-offices">Offices / studies<input id="upper-offices" type="number" min="0" max="20" step="1" value="0"></label>
+            </div>
+            <label for="upper-other-rooms">Other upper-floor rooms <span class="field-hint">Optional; include a count</span></label>
+            <input id="upper-other-rooms" type="text" placeholder="e.g. 1 storage room">
+          </div>
+          <label for="room-size-mode">Room size preference</label>
+          <select id="room-size-mode">
+            <option value="typical">Typical, practical room sizes (recommended)</option>
+            <option value="flexible">Flexible sizes; use more of the house</option>
+          </select>
+          <p class="field-hint">Typical mode sets room area limits for guided designs only. Custom prompt mode is not affected.</p>
+          <label for="must-have">Must-have size rules or requirements <span class="field-hint">Optional</span></label>
+          <textarea id="must-have" class="short-textarea" placeholder="Example: bedrooms at least 2.4 m wide; bathroom no larger than 3 m²"></textarea>
+          <details class="guided-options">
+            <summary>Optional preferences</summary>
+            <label for="plan-shape">Building shape</label>
+            <select id="plan-shape">
+              <option value="">No preference</option>
+              <option value="rectangular">Rectangular</option>
+              <option value="L-shaped">L-shaped courtyard</option>
+              <option value="U-shaped">U-shaped courtyard</option>
+            </select>
+            <label for="lift-choice">Lift</label>
+            <select id="lift-choice">
+              <option value="">No preference</option>
+              <option value="yes">Include a lift</option>
+              <option value="no">No lift</option>
+            </select>
+            <label for="site-features">Outdoor features</label>
+            <input id="site-features" type="text" placeholder="e.g. 2 parking spaces, a small garden">
+            <label for="look-preferences">Colors, style or materials</label>
+            <textarea id="look-preferences" class="short-textarea" placeholder="e.g. warm timber floors, sage walls"></textarea>
+          </details>
+          <p class="prompt-disclaimer">Generation uses one Groq request after you submit. The planner may not fit every requirement; staircase size and placement follow the current planner. Review the generated plan.</p>
+        </form>
+        <details class="prompt-customizer">
+          <summary>Customize prompt <span>Advanced</span></summary>
+          <label class="custom-mode"><input id="use-custom-prompt" type="checkbox"> Use my prompt instead of the guided answers</label>
+          <label for="prompt">Your requirements</label>
+          <textarea id="prompt" spellcheck="false" placeholder="Describe the building you want."></textarea>
+          <p class="prompt-disclaimer">Experimental: not every requirement may fit the selected footprint or current planner. Generation may fail or preferences may need adjustment.</p>
+        </details>
         <div class="brief-note"><span class="dot"></span>Groq reads the brief · Local engine plans · Blender builds
         </div><button id="generate" class="primary wide">Generate with Groq <span>↗</span></button><button id="demo" class="quiet wide">Load example residence</button><button id="detail-demo" class="quiet wide">Load detailed room</button>
         <button id="multi-demo" class="quiet wide">Load 4-floor example</button>

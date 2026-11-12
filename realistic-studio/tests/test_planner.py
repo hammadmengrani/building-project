@@ -54,6 +54,39 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual(3, sum(('bedroom' in r['name'].lower() for r in scene['rooms'])))
         self.assertNotEqual(shape_signature(scene), shape_signature(compile_brief(BRIEF)))
 
+    def test_explicit_maximum_room_areas_are_honored(self):
+        brief = copy.deepcopy(BRIEF)
+        limits = {'bed1': 16.0, 'bed2': 16.0, 'bath': 6.0, 'living': 26.0, 'kitchen': 14.0}
+        for room in brief['rooms']:
+            if room['id'] in limits:
+                room['maximum_area'] = limits[room['id']]
+        scene = compile_brief(brief)
+        self.assertEqual([], validate(scene))
+        for room in scene['rooms']:
+            if room['id'] in limits:
+                area = room['width'] * room['depth']
+                self.assertLessEqual(area, limits[room['id']] + 0.01, room['id'])
+
+    def test_bounded_rooms_fit_compact_multistorey_footprint(self):
+        brief = copy.deepcopy(BRIEF)
+        brief.update(shape='rectangle', width=10.0, depth=12.0, storeys=2, upper_floors=[])
+        brief['rooms'] = [
+            dict(id='bed1', name='Bedroom 1', kind='bedroom', target_area=14.0, maximum_area=18.0, zone='rear'),
+            dict(id='bed2', name='Bedroom 2', kind='bedroom', target_area=14.0, maximum_area=18.0, zone='rear'),
+            dict(id='bath1', name='Shared Bathroom 1', kind='bathroom', target_area=4.5, maximum_area=6.0),
+            dict(id='bath2', name='Shared Bathroom 2', kind='bathroom', target_area=4.5, maximum_area=6.0),
+            dict(id='kitchen', name='Kitchen', kind='kitchen', target_area=10.0, maximum_area=15.0),
+        ]
+        scene = compile_brief(brief)
+        self.assertEqual([], validate(scene))
+        for layout in [scene, *scene['upper_floors']]:
+            areas = {r['id']: r['width'] * r['depth'] for r in layout['rooms']}
+            self.assertLessEqual(areas['bed1'], 18.01)
+            self.assertLessEqual(areas['bed2'], 18.01)
+            self.assertLessEqual(areas['bath1'], 6.01)
+            self.assertLessEqual(areas['bath2'], 6.01)
+            self.assertLessEqual(areas['kitchen'], 15.01)
+
     def test_rectangle_and_u_shape_connectivity(self):
         for shape in ('rectangle', 'U'):
             brief = copy.deepcopy(BRIEF)

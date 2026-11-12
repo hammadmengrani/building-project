@@ -5,12 +5,31 @@ import sys
 import unittest
 from pydantic import ValidationError
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from intent import BriefResponse, RoomIntent
+from intent import BriefResponse, DEFAULT_BRIEF_COLORS, RoomIntent
 from planner import compile_brief
 from server import checked_scene
 ROOT=Path(__file__).resolve().parents[1]
 
 class RoomIntentNormalizationTests(unittest.TestCase):
+    def test_missing_or_null_palette_uses_project_defaults(self):
+        source = json.loads((ROOT/'assets/l-courtyard-brief.json').read_text())
+        for field in DEFAULT_BRIEF_COLORS:
+            source.pop(field)
+        source['wall_color'] = None
+        source['storeys'] = 2
+        source['upper_floors'] = None
+        response = BriefResponse.model_validate(dict(
+            message='ready',
+            ready=True,
+            assumptions=[],
+            unsupported=[],
+            brief=source
+        ))
+        for field, expected in DEFAULT_BRIEF_COLORS.items():
+            with self.subTest(field=field):
+                self.assertEqual(getattr(response.brief, field).model_dump(), expected)
+        self.assertEqual(response.brief.upper_floors, [])
+
     def test_zero_circulation_placeholders_compile_to_real_hall(self):
         brief=json.loads((ROOT/'assets/luxury-villa-brief.json').read_text())
         hall=next(r for r in brief['rooms'] if r['kind']=='hall')
@@ -27,8 +46,9 @@ class RoomIntentNormalizationTests(unittest.TestCase):
         self.assertEqual(brief,before)
 
     def test_zero_optional_minimum_is_absent_but_positive_constraints_survive(self):
-        room=RoomIntent(id='bed',name='Bedroom',kind='bedroom',target_area=28.,minimum_area=0,minimum_width=0)
+        room=RoomIntent(id='bed',name='Bedroom',kind='bedroom',target_area=28.,minimum_area=0,maximum_area=0,minimum_width=0)
         self.assertIsNone(room.minimum_area)
+        self.assertIsNone(room.maximum_area)
         self.assertIsNone(room.minimum_width)
         room=RoomIntent(id='bed',name='Bedroom',kind='bedroom',target_area=28.,minimum_area=25.,minimum_width=4.)
         self.assertEqual((room.minimum_area,room.minimum_width),(25.,4.))

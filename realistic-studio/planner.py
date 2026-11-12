@@ -55,6 +55,42 @@ def allocate(units, length, cross):
     mins = [minimum_length(u, cross) for u in units]
     if sum(mins) > length + 1e-05:
         raise PlanningError('Requested rooms do not fit this partition.')
+    if any(member.maximum_area is not None for unit in units for member in unit['members']):
+        clear = cross - 0.18
+        caps = [
+            sum(member.maximum_area / cross for member in unit['members'] if member.maximum_area is not None)
+            if all(member.maximum_area is not None for member in unit['members'])
+            else length
+            for unit in units
+        ]
+        if any(cap + 1e-05 < low for cap, low in zip(caps, mins)):
+            raise PlanningError('A requested room maximum area is too small for its minimum width/area.')
+        targets = [
+            min(cap, max(low, unit['area'] / clear + 0.18))
+            for unit, low, cap in zip(units, mins, caps)
+        ]
+        if sum(targets) > length:
+            remaining = length - sum(mins)
+            weights = [max(0.0, target - low) for target, low in zip(targets, mins)]
+            total = sum(weights)
+            return [low + (remaining * weight / total if total else 0.0) for low, weight in zip(mins, weights)]
+        spans = list(targets)
+        remaining = length - sum(spans)
+        for _ in range(len(units) + 1):
+            eligible = [i for i, (span, cap) in enumerate(zip(spans, caps)) if cap - span > 1e-05]
+            if not eligible or remaining <= 1e-05:
+                break
+            weights = [max(units[i]['area'], 1.0) for i in eligible]
+            total = sum(weights)
+            distributed = 0.0
+            for index, weight in zip(eligible, weights):
+                addition = min(caps[index] - spans[index], remaining * weight / total)
+                spans[index] += addition
+                distributed += addition
+            if distributed <= 1e-05:
+                break
+            remaining -= distributed
+        return spans
     demands = [max(0, u['area'] / cross - low) for u, low in zip(units, mins)]
     surplus = length - sum(mins)
     weights = demands if sum(demands) > 0.001 else [u['area'] for u in units]
@@ -74,14 +110,16 @@ def fill_strip(units, rect, axis, brief):
     rooms = []
     cursor = y if axis == 'y' else x
     end = y + d if axis == 'y' else x + w
+    has_area_caps = any(member.maximum_area is not None for unit in units for member in unit['members'])
     for index, (unit, span) in enumerate(zip(units, lengths)):
-        next_edge = rounded(end if index == len(units) - 1 else cursor + span)
+        next_edge = rounded(cursor + span if has_area_caps or index < len(units) - 1 else end)
         span = next_edge - cursor
         member_units = [{'members': [m], 'area': m.target_area} for m in unit['members']]
         portions = allocate(member_units, span, cross)
         subcursor = cursor
+        member_caps = any(member.maximum_area is not None for member in unit['members'])
         for i, (member, portion) in enumerate(zip(unit['members'], portions)):
-            subend = rounded(next_edge if i == len(portions) - 1 else subcursor + portion)
+            subend = rounded(subcursor + portion if member_caps or i < len(portions) - 1 else next_edge)
             r = (x, subcursor, w, subend - subcursor) if axis == 'y' else (subcursor, y, subend - subcursor, d)
             rooms.append(room_record(member, r, brief))
             subcursor = subend

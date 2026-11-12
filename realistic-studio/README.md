@@ -28,11 +28,13 @@ The example residence is explicitly labelled EXAMPLE RESIDENCE and is generated 
 
 ## Workflow
 
-1. Inspect the labelled example, or replace the brief and click Generate with Groq.
+1. Inspect the labelled example, or fill in the guided design questions (building footprint, floors and exact room counts) and click Generate with Groq. Enter the house's outer width and depth, including exterior walls; these are not plot dimensions. Typical guided room sizes send per-room maximums as planning preferences; they are not hard guarantees if the requested rooms do not fit. The advanced custom prompt is independent and only includes maximums when the user explicitly requests them. Optional preferences are available in an expandable section. Answers are combined locally and sent in one Groq request.
 2. Groq returns a compact semantic brief: envelope dimensions, shape, room types/counts, preferred areas/zones, attached-bathroom relationships, furniture kinds and colors. It never calculates coordinates. The local planner searches variable partitions, adds connected circulation, calculates exact shared-wall doors and exterior windows, and searches furniture placements with door clearance. The full geometry validator must pass before Blender runs.
 3. Click an object or its outliner entry. Use G / R / S for move / rotate / scale; Q selects, F frames the scene, Esc deselects. Ctrl+Z undoes; Ctrl+Shift+Z redoes.
 4. Save project downloads both the scene and visual overrides. Open validates and rebuilds a saved project. Exports rebuild from this data so edits are included.
 5. Render image runs Cycles at 1200×900 with denoising and 48 samples, using the current view, camera, sun direction and exposure. Its appearance differs from the real-time Three.js renderer. The output dialog provides a download.
+
+See the [Software Design Specification](docs/SDS.md) for the architecture flow, API/job lifecycle, building-footprint example, guided test case, matching custom prompt, and known limitations.
 
 Viewport coordinates are glTF/Three.js Y-up; source room coordinates are Blender Z-up. The backend converts visual overrides into Blender coordinates. JSON stores source design and separate entity overrides. Free object edits are visual changes; they do not recalculate room boundaries or certify a new structural plan. A moved window does not automatically recut the source wall opening. Use a Groq redesign for changes to room layout or opening placement.
 

@@ -78,6 +78,7 @@ class RoomIntent(MaterialIntent):
     kind: RoomKind = Field(min_length=1,max_length=32)
     target_area: float = Field(ge=0, le=1500)
     minimum_area: float | None = Field(default=None, ge=2, le=1500)
+    maximum_area: float | None = Field(default=None, ge=2, le=1500)
     minimum_width: float | None = Field(default=None, ge=1.4, le=15)
     zone: Literal['front', 'rear', 'any'] = 'any'
     attached_to: str | None = None
@@ -95,7 +96,7 @@ class RoomIntent(MaterialIntent):
                 return 'hall'
         return value
 
-    @field_validator('minimum_area', 'minimum_width', mode='before')
+    @field_validator('minimum_area', 'maximum_area', 'minimum_width', mode='before')
     @classmethod
     def normalize_unspecified_minimum(cls, value):
         # Providers often use 0 instead of null for optional constraints.
@@ -109,6 +110,8 @@ class RoomIntent(MaterialIntent):
         # Circulation dimensions are computed by hall_record, not target_area.
         if self.kind != 'hall' and self.target_area < 2:
             raise ValueError('A usable room needs target_area >= 2 square metres; only circulation may use zero.')
+        if self.maximum_area is not None and self.minimum_area is not None and self.maximum_area < self.minimum_area:
+            raise ValueError('A room maximum_area cannot be smaller than its minimum_area.')
         return self
 
     @field_validator('furniture', mode='before')
@@ -136,6 +139,15 @@ class SiteBrief(Data):
     pool_width: float = Field(default=0.0, ge=0)
     pool_depth: float = Field(default=0.0, ge=0)
 
+DEFAULT_BRIEF_COLORS = {
+    'wall_color': dict(r=0.92, g=0.88, b=0.78),
+    'accent_color': dict(r=0.45, g=0.25, b=0.16),
+    'roof_color': dict(r=0.18, g=0.20, b=0.23),
+    'floor_color': dict(r=0.75, g=0.65, b=0.48),
+    'bedroom_floor_color': dict(r=0.62, g=0.45, b=0.28),
+    'furniture_color': dict(r=0.35, g=0.27, b=0.20),
+}
+
 class DesignBrief(MaterialIntent):
     architecture: Architecture | None = None
     materials: MaterialPalette | None = None
@@ -146,12 +158,12 @@ class DesignBrief(MaterialIntent):
     courtyard_corner: Literal['rear-right', 'rear-left'] = 'rear-right'
     entrance: Literal['front-left', 'front-center', 'front-right', 'left', 'right', 'rear'] = 'front-left'
     ceiling_height: float = Field(default=3.2, ge=2.6, le=4.2)
-    wall_color: Color
-    accent_color: Color
-    roof_color: Color
-    floor_color: Color
-    bedroom_floor_color: Color
-    furniture_color: Color
+    wall_color: Color = Field(default_factory=lambda: Color(**DEFAULT_BRIEF_COLORS['wall_color']))
+    accent_color: Color = Field(default_factory=lambda: Color(**DEFAULT_BRIEF_COLORS['accent_color']))
+    roof_color: Color = Field(default_factory=lambda: Color(**DEFAULT_BRIEF_COLORS['roof_color']))
+    floor_color: Color = Field(default_factory=lambda: Color(**DEFAULT_BRIEF_COLORS['floor_color']))
+    bedroom_floor_color: Color = Field(default_factory=lambda: Color(**DEFAULT_BRIEF_COLORS['bedroom_floor_color']))
+    furniture_color: Color = Field(default_factory=lambda: Color(**DEFAULT_BRIEF_COLORS['furniture_color']))
     rooms: list[RoomIntent] = Field(min_length=1, max_length=20)
     storeys: int = Field(default=1, ge=1)
     storey_height: float | None = Field(default=None, ge=2.8, le=5.5)
@@ -160,6 +172,19 @@ class DesignBrief(MaterialIntent):
     site: SiteBrief | None = None
     action: Literal['new', 'layout', 'palette'] = 'new'
     layout_variant: int = Field(default=0, ge=0, le=9999)
+
+    @model_validator(mode='before')
+    @classmethod
+    def default_missing_colors(cls, value):
+        if not isinstance(value, dict):
+            return value
+        normalized = dict(value)
+        for field, color in DEFAULT_BRIEF_COLORS.items():
+            if normalized.get(field) is None:
+                normalized[field] = dict(color)
+        if normalized.get('upper_floors') is None:
+            normalized['upper_floors'] = []
+        return normalized
 
     @model_validator(mode='after')
     def check_references(self):
@@ -247,8 +272,12 @@ List EACH requested room once per floor program, including each bedroom and bath
 hall for circulation; the engine may split circulation into connected rectangular segments.
 Preserve explicit room counts. Set target_area in square metres as a preference, not exact
 geometry. Use realistic areas: bedroom 12–18, bathroom 4–7, living 18–28, kitchen 9–15.
-Use zone=front for public spaces and rear for bedrooms. Only attached bathrooms have
-attached_to, referencing their bedroom ID. Shared bathrooms have attached_to=null.
+Use zone=front for public spaces and rear for bedrooms. Bathrooms are shared by default:
+set attached_to=null unless the user explicitly says the bathroom is ensuite/attached to a
+specific bedroom. Never invent an attached bathroom or bedroom reference. For an explicitly
+attached bathroom, attached_to must exactly match that bedroom's ID in the same floor program.
+If the user requests an attached bathroom but does not identify which bedroom when several
+bedrooms exist, ask for clarification instead of guessing.
 Furniture is a small list of requested kinds, not coordinates: bedroom bed+wardrobe,
 bathroom toilet+basin+shower, living sofa+table, kitchen kitchen. Halls need no furniture.
 Architectural appearance must be represented in architecture, not only described in message.
@@ -262,7 +291,7 @@ the prompt. Do not repeat the same architecture parameters for materially differ
 For a courtyard villa explicitly use shape L or U; leave its courtyard open. Honor an explicitly
 requested rectangular shape. Do not promise unsupported curves, arches or pitched roofs.
 For explicitly spacious rooms supply minimum_width (minimum usable short side) and minimum_area
-in square metres, alongside target_area. These are hard constraints: do not substitute tiny rooms. Omit unspecified minimum_area/minimum_width or use null; do not use zero. Only hall/circulation may have target_area=0 because its actual dimensions are calculated locally. Other room target areas must be at least 2.
+in square metres, alongside target_area. These are hard constraints: do not substitute tiny rooms. If the user explicitly supplies a maximum room area, set maximum_area; otherwise omit it or use null. Never set maximum_area below minimum_area. User-specified size rules override any suggested sizing defaults. Omit unspecified minimum_area/minimum_width or use null; do not use zero. Only hall/circulation may have target_area=0 because its actual dimensions are calculated locally. Other room target areas must be at least 2.
 Use materials for global finishes and optional room materials for overrides.
 Roles: wood, upholstery, stone (countertops), curtain, floor, wall. Each role may specify
 finish (plain, oak, walnut, stone, marble, concrete, linen, leather, plaster, ceramic, terracotta),
@@ -274,7 +303,11 @@ Select interior_style: modern, traditional, industrial, coastal or minimalist ba
 Room-level interior_style may override it. furniture_scale ranges .75–1.25; use 1 by default.
 Traditional means panelled timber furniture; industrial means exposed metal frames; coastal means slatted light timber; minimalist means simple low-profile furniture.
 Electrical, cold/hot water, drainage and structural concept overlays are generated locally, not unsupported features. Do not invent engineering certification.
-Use palette values RGB 0–1, interpreting named colors. Do not reuse example beige by default.
+Use palette values RGB 0–1, interpreting named colors. If no palette is requested or a color is omitted,
+use wall {"r":0.92,"g":0.88,"b":0.78}, accent {"r":0.45,"g":0.25,"b":0.16},
+roof {"r":0.18,"g":0.20,"b":0.23}, floor {"r":0.75,"g":0.65,"b":0.48},
+bedroom floor {"r":0.62,"g":0.45,"b":0.28}, and furniture {"r":0.35,"g":0.27,"b":0.20}.
+Explicit user colors override these defaults.
 For a color-only change with previous_scene, action=palette and preserve room IDs/counts;
 the engine keeps all geometry exactly. For a new/different building use action=new/layout.
 For a different-design request choose a new layout_variant integer.

@@ -52,6 +52,7 @@ class LayoutTests(unittest.TestCase):
         self.assertLessEqual(calls[0]['max_completion_tokens'], 5000)
         self.assertNotIn('openings', calls[0]['messages'][1]['content'])
         self.assertIn('A furnished bungalow', calls[0]['messages'][1]['content'])
+        self.assertIn('Bathrooms are shared by default', calls[0]['messages'][0]['content'])
 
     def test_provider_desk_alias_generates_scene_in_one_call(self):
         from unittest.mock import Mock

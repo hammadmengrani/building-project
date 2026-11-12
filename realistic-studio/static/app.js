@@ -19,7 +19,8 @@ const state = {
   history: [],
   future: [],
   loadSerial: 0,
-  dirty: false
+  dirty: false,
+  lastPrompt: ''
 };
 const viewport = $('viewport');
 let renderer;
@@ -735,16 +736,115 @@ async function demo() {
     notice(e.message, true);
   }
 }
+function guidedRequirements() {
+  const widthInput = Number($('building-width').value);
+  const depthInput = Number($('building-depth').value);
+  const unit = $('building-unit').value;
+  const scale = unit === 'ft' ? 0.3048 : 1;
+  const enteredWidth = widthInput * scale;
+  const enteredDepth = depthInput * scale;
+  const floors = Number($('floor-count').value);
+  if (!Number.isFinite(enteredWidth) || !Number.isFinite(enteredDepth) || !widthInput || !depthInput) {
+    throw new Error('Enter both dimensions.');
+  }
+  if (!Number.isInteger(floors) || floors < 1 || floors > 60) {
+    throw new Error('Enter a whole number of floors between 1 and 60.');
+  }
+  const width = enteredWidth;
+  const depth = enteredDepth;
+  const layout = $('floor-layout').value;
+  const readProgram = prefix => {
+    const items = [];
+    let roomCount = 0;
+    const count = key => {
+      const input = $(`${prefix}-${key}`);
+      const value = Number(input.value);
+      if (!Number.isInteger(value) || value < 0 || value > 20) {
+        throw new Error(`Room counts must be whole numbers from 0 to 20 (${input.getAttribute('aria-label') || input.parentElement.firstChild.textContent.trim()}).`);
+      }
+      return value;
+    };
+    const categories = [
+      ['bedrooms', 'bedroom'],
+      ['bathrooms', 'shared bathroom'],
+      ['kitchens', 'kitchen'],
+      ['living', 'living room'],
+      ['dining', 'dining room'],
+      ['offices', 'office/study']
+    ];
+    for (const [key, name] of categories) {
+      const amount = count(key);
+      if (!amount) continue;
+      items.push(`${amount} ${name}${amount === 1 ? '' : 's'}`);
+      roomCount += amount;
+    }
+    const other = $(`${prefix}-other-rooms`).value.trim();
+    if (other) {
+      items.push(other);
+      const listed = other.split(',').reduce((total, entry) => {
+        const match = entry.trim().match(/^(\d+)/);
+        return total + (match ? Number(match[1]) : 1);
+      }, 0);
+      roomCount += listed;
+    }
+    if (!items.length) throw new Error('Add at least one room to each floor program.');
+    if (roomCount > 20) throw new Error('The planner supports at most 20 requested rooms per floor.');
+    return { text: items.join(', '), roomCount };
+  };
+  const same = layout === 'same' ? readProgram('same') : null;
+  const ground = layout === 'different' ? readProgram('ground') : null;
+  const upper = layout === 'different' && floors > 1 ? readProgram('upper') : null;
+  if (width < 5 || width > 60 || depth < 5 || depth > 60) {
+    throw new Error('Building width and depth must each be between 5 and 60 metres.');
+  }
+  const sizeLimits = [
+    'For guided mode use practical target/max room areas unless the user gives different size rules: each bedroom 14/18 m², shared bathroom 4.5/6 m², kitchen 10/15 m², living room 22/28 m², dining room 10/12 m², office/study 12/18 m² (target/maximum).',
+    'Set each listed room maximum_area to the stated maximum; do not make a room bigger just to consume unused footprint. Give other named rooms realistic sizes for their function. Do not invent extra rooms. Preserve exact requested counts.'
+  ];
+  const lines = [
+    `Design a ${floors}-storey building with a ${width.toFixed(2)} m × ${depth.toFixed(2)} m BUILDING FOOTPRINT, including exterior walls. These are house dimensions, not plot dimensions.`,
+    layout === 'same'
+      ? `Repeat exactly this room program on every floor: ${same.text}.`
+      : floors > 1
+        ? `Ground floor room program: ${ground.text}. Repeat exactly this program on every upper floor: ${upper.text}.`
+        : `Ground floor room program: ${ground.text}.`,
+    'These are exact counts. Treat bathrooms as shared unless the user explicitly requests an ensuite attached to a named bedroom. Local planning adds aligned stairs and circulation; do not count them as extra user rooms.',
+    ...($('room-size-mode').value === 'typical' ? sizeLimits : ['Use flexible room sizes, but do not enlarge rooms beyond explicitly stated maximum areas.'])
+  ];
+  const mustHave = $('must-have').value.trim();
+  if (mustHave) lines.push(`Must-have size rules and requirements: ${mustHave}.`);
+  const shape = $('plan-shape').value;
+  if (shape) lines.push(`Use a ${shape} plan.`);
+  const lift = $('lift-choice').value;
+  if (lift) lines.push(lift === 'yes' ? 'Include an aligned lift serving every floor.' : 'Do not include a lift.');
+  const siteFeatures = $('site-features').value.trim();
+  if (siteFeatures) lines.push(`Outdoor/site features: ${siteFeatures}.`);
+  const look = $('look-preferences').value.trim();
+  if (look) lines.push(`Appearance, colors and materials: ${look}.`);
+  return lines.join('\n');
+}
+$('floor-layout').onchange = () => {
+  const different = $('floor-layout').value === 'different';
+  $('same-floor-program').hidden = different;
+  $('different-floor-program').hidden = !different;
+};
 $('generate').onclick = async() => {
-  const prompt = $('prompt').value.trim();
-  if (! prompt) {
-    notice('Describe the building first.', true);
+  let prompt;
+  try {
+    prompt = $('use-custom-prompt').checked ? $('prompt').value.trim() : guidedRequirements();
+  } catch (e) {
+    notice(e.message, true);
+    return;
+  }
+  if (!prompt) {
+    notice($('use-custom-prompt').checked ? 'Enter your custom prompt first.' : 'Complete the required guided-design answers first.', true);
     return;
   }
   if (! state.config.groq) {
     notice('GROQ_API_KEY is missing. Add it to the parent .env and restart the server.', true);
     return;
   }
+  state.lastPrompt = prompt;
   const result = await job('design', {
     prompt,
     previous: state.source === 'example' ? null : state.scene
@@ -854,7 +954,7 @@ $('save').onclick =() => {
     version: 1,
     scene: state.scene,
     edits: state.edits,
-    prompt: $('prompt').value
+    prompt: state.lastPrompt || $('prompt').value
   }, null, 2), 'form-project.json', 'application/json');
   state.dirty = false;
   $('dirty').style.color = '#69736b';
@@ -879,7 +979,11 @@ $('file').onchange = async e => {
       state.history =[];
       state.future =[];
       state.base = '/output/' + result.id;
-      if (typeof p.prompt === 'string') $('prompt').value = p.prompt;
+      if (typeof p.prompt === 'string') {
+        $('prompt').value = p.prompt;
+        state.lastPrompt = p.prompt;
+        $('use-custom-prompt').checked = true;
+      }
       describeScene();
       await loadModel();
       notice('Project restored.');
