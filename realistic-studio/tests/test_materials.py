@@ -51,4 +51,13 @@ class MaterialTests(unittest.TestCase):
             self.assertEqual(before,{k:p.read_bytes() for k,p in ensure_maps(tmp,'marble',0.35,size=32).items()})
             self.assertNotEqual(before['color'],ensure_maps(tmp,'oak',0.35,size=32)['color'].read_bytes())
 
+    def test_terracotta_maps_are_distinct_and_neutral(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            clay = ensure_maps(tmp,'terracotta',.8,size=32)
+            ceramic = ensure_maps(tmp,'ceramic',.8,size=32)
+            pixels = Image.open(clay['color']).tobytes()
+            self.assertTrue(all(pixels[i] == pixels[i+1] == pixels[i+2] for i in range(0,len(pixels),3)))
+            self.assertNotEqual(clay['color'].read_bytes(),ceramic['color'].read_bytes())
+            self.assertTrue(all(path.exists() for path in clay.values()))
+
 if __name__=='__main__':unittest.main()

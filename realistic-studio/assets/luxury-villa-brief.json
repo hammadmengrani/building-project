@@ -1,0 +1,181 @@
+{
+  "width": 24.0,
+  "depth": 22.0,
+  "shape": "L",
+  "courtyard_corner": "rear-right",
+  "entrance": "front-left",
+  "ceiling_height": 3.2,
+  "wall_color": {
+    "r": 0.88,
+    "g": 0.85,
+    "b": 0.77
+  },
+  "accent_color": {
+    "r": 0.42,
+    "g": 0.19,
+    "b": 0.09
+  },
+  "roof_color": {
+    "r": 0.22,
+    "g": 0.23,
+    "b": 0.21
+  },
+  "floor_color": {
+    "r": 0.78,
+    "g": 0.76,
+    "b": 0.7
+  },
+  "bedroom_floor_color": {
+    "r": 0.45,
+    "g": 0.3,
+    "b": 0.18
+  },
+  "furniture_color": {
+    "r": 0.65,
+    "g": 0.27,
+    "b": 0.13
+  },
+  "rooms": [
+    {
+      "id": "living",
+      "name": "Grand lounge and dining",
+      "kind": "living",
+      "target_area": 65.0,
+      "zone": "front",
+      "attached_to": null,
+      "furniture": [
+        "sofa",
+        "sofa",
+        "table",
+        "chair",
+        "chair"
+      ],
+      "minimum_width": 5.0,
+      "minimum_area": 50.0
+    },
+    {
+      "id": "kitchen",
+      "name": "Family kitchen",
+      "kind": "kitchen",
+      "target_area": 23.0,
+      "zone": "front",
+      "attached_to": null,
+      "furniture": [
+        "kitchen",
+        "table"
+      ],
+      "minimum_width": 3.2,
+      "minimum_area": 16.0
+    },
+    {
+      "id": "bed1",
+      "name": "Master suite",
+      "kind": "bedroom",
+      "target_area": 34.0,
+      "zone": "rear",
+      "attached_to": null,
+      "furniture": [
+        "bed",
+        "wardrobe"
+      ],
+      "minimum_width": 4.0,
+      "minimum_area": 25.0
+    },
+    {
+      "id": "bath1",
+      "name": "Master bathroom",
+      "kind": "bathroom",
+      "target_area": 11.0,
+      "zone": "rear",
+      "attached_to": "bed1",
+      "furniture": [
+        "toilet",
+        "basin",
+        "shower"
+      ],
+      "minimum_width": 2.5,
+      "minimum_area": 8.0
+    },
+    {
+      "id": "bed2",
+      "name": "Second suite",
+      "kind": "bedroom",
+      "target_area": 32.0,
+      "zone": "rear",
+      "attached_to": null,
+      "furniture": [
+        "bed",
+        "wardrobe"
+      ],
+      "minimum_width": 4.0,
+      "minimum_area": 25.0
+    },
+    {
+      "id": "bath2",
+      "name": "Second bathroom",
+      "kind": "bathroom",
+      "target_area": 10.0,
+      "zone": "rear",
+      "attached_to": "bed2",
+      "furniture": [
+        "toilet",
+        "basin",
+        "shower"
+      ],
+      "minimum_width": 2.5,
+      "minimum_area": 8.0
+    },
+    {
+      "id": "hall",
+      "name": "Circulation",
+      "kind": "hall",
+      "target_area": 15.0,
+      "zone": "any",
+      "attached_to": null,
+      "furniture": []
+    }
+  ],
+  "layout_variant": 217,
+  "interior_style": "modern",
+  "architecture": {
+    "entrance_style": "portal",
+    "porch_width": 5.0,
+    "porch_depth": 2.4,
+    "roof_overhang": 0.55,
+    "parapet_profile": "stepped",
+    "facade_panels": true,
+    "screens": true,
+    "screen_spacing": 0.2,
+    "pergola": true,
+    "window_ratio": 0.7,
+    "window_height": 2.1,
+    "window_sill": 0.5
+  },
+  "materials": {
+    "stone": {
+      "finish": "stone",
+      "color": {
+        "r": 0.68,
+        "g": 0.45,
+        "b": 0.28
+      },
+      "roughness": 0.7
+    },
+    "wood": {
+      "finish": "walnut",
+      "color": {
+        "r": 0.28,
+        "g": 0.15,
+        "b": 0.07
+      }
+    },
+    "upholstery": {
+      "finish": "linen",
+      "color": {
+        "r": 0.85,
+        "g": 0.8,
+        "b": 0.67
+      }
+    }
+  }
+}

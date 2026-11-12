@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from geometry import walls, owners, edges, validate
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from site_geometry import add_stairs, add_site
+from facade_geometry import add_villa_facade
 from interior_details import add_finishing
 from detail_assets import add_detail_furniture, curtain_panel
 from services_geometry import add_electrical, add_plumbing
@@ -45,8 +46,9 @@ CYLINDER_MESHES = {}
 def build(view):
     scene = MASTER
     BASE = 0.22
-    bpy.ops.object.select_all(action='SELECT')
-    bpy.ops.object.delete(use_global=False)
+    # Hidden concept objects must also be removed between exported views.
+    for obj in list(bpy.data.objects):
+        bpy.data.objects.remove(obj, do_unlink=True)
     cache = MATERIAL_CACHE
     current = {'key': 'site', 'category': 'Site', 'pivot': (0, 0, 0), 'level': 0, 'source': 'site'}
 
@@ -129,6 +131,16 @@ def build(view):
                         pixels[i + 2] *= values[2]
                     tinted.pixels.foreach_set(pixels)
                     tinted.update()
+                    # A copied FILE image still points to the untinted source PNG.
+                    # Persist its edited pixels before packing/reopening the .blend.
+                    import hashlib
+                    tint_dir = ASSETS / 'generated' / 'tints'
+                    tint_dir.mkdir(parents=True, exist_ok=True)
+                    tint_key = hashlib.sha256(repr(key).encode()).hexdigest()[:24]
+                    tinted.filepath_raw = str(tint_dir / (tint_key + '.png'))
+                    tinted.file_format = 'PNG'
+                    tinted.save()
+                    tinted.pack()
                     tex.image = tinted
                     links.new(tex.outputs['Color'], n.inputs[socket])
                     nodes.remove(mix)
@@ -217,7 +229,8 @@ def build(view):
                 box('Floor ' + r['id'], (w - 0.08, d - 0.08, 0.035), (x + w / 2, y + d / 2, BASE + 0.0175), surface(resolve_materials(MASTER, r)['floor']))
             if view == 'exterior' and level == MASTER.get('storeys', 1) - 1:
                 entity('roof:' + r['id'], 'Roof', (x + w / 2, y + d / 2, BASE + h))
-                box('Roof ' + r['id'], (w + 0.22, d + 0.22, 0.17), (x + w / 2, y + d / 2, BASE + h + 0.07), roofmat, True)
+                roof_extension = 0.0 if MASTER.get('architecture') else 0.22
+                box('Roof ' + r['id'], (w + roof_extension, d + roof_extension, 0.17), (x + w / 2, y + d / 2, BASE + h + 0.07), roofmat, True)
                 # Shadow reveal and capping articulate separate AI-designed building volumes.
                 for yy in (y - 0.04, y + d + 0.04):
                     box('Roof fascia', (w + 0.22, 0.1, 0.18), (x + w / 2, yy, BASE + h - 0.07), accent)
@@ -308,7 +321,8 @@ def build(view):
                     else:
                         pp = (x + outward * 0.65, y, BASE + h + 0.3)
                         sz = (1.55, w + 1.3, 0.16)
-                    box('Floating entrance canopy', sz, pp, roofmat, True)
+                    if not MASTER.get('architecture'):
+                        box('Floating entrance canopy', sz, pp, roofmat, True)
                     for step in range(3):
                         dist = 0.4 + step * 0.4
                         zz = BASE - (step + 1) * 0.065
@@ -519,15 +533,18 @@ def build(view):
                         pp = (middle, fixed, z + 0.18) if axis == 'x' else (fixed, middle, z + 0.18)
                         sz = (along + 0.04, 0.28, 0.045) if axis == 'x' else (0.28, along + 0.04, 0.045)
                         box('Parapet coping', sz, pp, roofmat, True)
-                    if axis == 'x' and abs(fixed) < 0.02:
+                    if not MASTER.get('architecture') and axis == 'x' and abs(fixed) < 0.02:
                         for xx in [left + 0.17, left + 0.29, left + 0.41]:
                             if xx > right - 0.12:
                                 continue
                             box('Vertical timber batten', (0.045, 0.08, min(2.8, r['height'] - 0.3)), (xx, fixed - 0.12, BASE + r['height'] / 2), accent, True)
+        add_villa_facade(scene, BASE, level, view, entity, box, mat, surface, resolve_materials)
         if level == 0:
             # Landscape outside the actual footprint, leaving the full room plan untouched.
             for side, xx in [('left', -0.75 if MASTER.get('site') else -1.25), ('right', W + 1.8 if MASTER.get('site', {}) and MASTER['site'].get('park') else W + 0.75 if MASTER.get('site') else W + 1.25)]:
-                for yy in (D * 0.2, D * 0.65, D * 0.88):
+                density = (MASTER.get('architecture') or {}).get('landscape_density', 'balanced')
+                positions = {'minimal': (.55,), 'balanced': (.2, .65, .88), 'lush': (.12, .3, .5, .7, .88)}[density]
+                for yy in (D * fraction for fraction in positions):
                     entity('garden:' + side + ':' + str(yy), 'Landscape', (xx, yy, 0))
                     box('Raised planter', (1.0, 1.35, 0.32), (xx, yy, 0.1), roofmat, True)
                     cylinder('Tree trunk', (0.1, 0.1, 1.5), (xx, yy, 0.8), wood)
@@ -658,9 +675,6 @@ def build(view):
     bpy.context.scene.unit_settings.system = 'METRIC'
     setup_lighting(view)
     bpy.context.view_layer.update()
-    if view == 'exterior' or a.render:
-        bpy.ops.file.pack_all()
-        bpy.ops.wm.save_as_mainfile(filepath=str(out / 'design.blend'))
     result = bpy.ops.export_scene.gltf(filepath=str(out / (view + '.glb')), export_format='GLB', export_apply=True, export_extras=True, export_cameras=False, export_lights=False)
     if 'FINISHED' not in result:
         raise RuntimeError('GLB export failed')
@@ -689,6 +703,19 @@ def build(view):
         manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {'version': 1, 'units': 'metres', 'views': {}}
         manifest['views'][view] = {'file': filename, 'bytes': (out / filename).stat().st_size, 'bounds': {'min': [low[0], low[2], -high[1]], 'max': [high[0], high[2], -low[1]]}}
         manifest_path.write_text(json.dumps(manifest, indent=2))
+    # Keep all concept entities in exports, but open the .blend as a finished house.
+    # This also prevents construction scaffolding obscuring a presentation render.
+    for root in groups.values():
+        category = str(root.get('category', ''))
+        hidden = category.startswith(('Electrical', 'Plumbing', 'Structure', 'Rebar', 'Formwork', 'Label')) or (category == 'Ceiling' and not PRESENTATION.get('ceilings', False))
+        for obj in [root, *root.children_recursive]:
+            obj.hide_set(hidden)
+            if hidden:
+                obj.hide_render = True
+    if view == 'exterior' or a.render:
+        bpy.ops.file.pack_all()
+        bpy.ops.wm.save_as_mainfile(filepath=str(out / 'design.blend'))
+
 
 
 def setup_lighting(view):

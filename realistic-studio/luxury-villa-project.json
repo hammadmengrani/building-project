@@ -1,0 +1,676 @@
+{
+  "version": 1,
+  "scene": {
+    "architecture": {
+      "entrance_style": "portal",
+      "porch_width": 5.0,
+      "porch_depth": 2.4,
+      "roof_overhang": 0.55,
+      "parapet_profile": "stepped",
+      "facade_panels": true,
+      "screens": true,
+      "screen_spacing": 0.2,
+      "pergola": true,
+      "window_ratio": 0.7,
+      "window_height": 2.1,
+      "window_sill": 0.5
+    },
+    "materials": {
+      "wood": {
+        "finish": "walnut",
+        "color": {
+          "r": 0.28,
+          "g": 0.15,
+          "b": 0.07
+        },
+        "roughness": null,
+        "repeat_m": null
+      },
+      "upholstery": {
+        "finish": "linen",
+        "color": {
+          "r": 0.85,
+          "g": 0.8,
+          "b": 0.67
+        },
+        "roughness": null,
+        "repeat_m": null
+      },
+      "stone": {
+        "finish": "stone",
+        "color": {
+          "r": 0.68,
+          "g": 0.45,
+          "b": 0.28
+        },
+        "roughness": 0.7,
+        "repeat_m": null
+      },
+      "curtain": null,
+      "floor": null,
+      "wall": null
+    },
+    "interior_style": "modern",
+    "width": 24.0,
+    "depth": 22.0,
+    "wall_color": {
+      "r": 0.88,
+      "g": 0.85,
+      "b": 0.77
+    },
+    "accent_color": {
+      "r": 0.42,
+      "g": 0.19,
+      "b": 0.09
+    },
+    "roof_color": {
+      "r": 0.22,
+      "g": 0.23,
+      "b": 0.21
+    },
+    "rooms": [
+      {
+        "materials": null,
+        "id": "bed1",
+        "name": "Master suite",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 6.12,
+        "depth": 12.2512,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.45,
+          "g": 0.3,
+          "b": 0.18
+        },
+        "kind": "bedroom",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": null,
+        "id": "bath1",
+        "name": "Master bathroom",
+        "x": 0.0,
+        "y": 12.2512,
+        "width": 6.12,
+        "depth": 2.68,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "bathroom",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": null,
+        "id": "bed2",
+        "name": "Second suite",
+        "x": 0.0,
+        "y": 14.9312,
+        "width": 6.12,
+        "depth": 4.3888,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.45,
+          "g": 0.3,
+          "b": 0.18
+        },
+        "kind": "bedroom",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": null,
+        "id": "bath2",
+        "name": "Second bathroom",
+        "x": 0.0,
+        "y": 19.32,
+        "width": 6.12,
+        "depth": 2.68,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "bathroom",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": null,
+        "id": "kitchen",
+        "name": "Family kitchen",
+        "x": 7.92,
+        "y": 0.0,
+        "width": 3.38,
+        "depth": 7.0,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "kitchen",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": null,
+        "id": "living",
+        "name": "Grand lounge and dining",
+        "x": 11.3,
+        "y": 0.0,
+        "width": 12.7,
+        "depth": 7.0,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "living",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": null,
+        "id": "hall",
+        "name": "Circulation",
+        "x": 6.12,
+        "y": 0.0,
+        "width": 1.8,
+        "depth": 22.0,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "hall",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      },
+      {
+        "materials": null,
+        "id": "circulation_2",
+        "name": "Circulation 2",
+        "x": 7.92,
+        "y": 7.0,
+        "width": 16.08,
+        "depth": 1.8,
+        "height": 3.2,
+        "floor_color": {
+          "r": 0.78,
+          "g": 0.76,
+          "b": 0.7
+        },
+        "kind": "hall",
+        "interior_style": "modern",
+        "furniture_scale": 1.0
+      }
+    ],
+    "openings": [
+      {
+        "id": "door_1",
+        "kind": "door",
+        "axis": "y",
+        "x": 7.92,
+        "y": 7.697,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_2",
+        "kind": "door",
+        "axis": "y",
+        "x": 6.12,
+        "y": 2.2647,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_3",
+        "kind": "door",
+        "axis": "x",
+        "x": 1.345,
+        "y": 12.2512,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_4",
+        "kind": "door",
+        "axis": "y",
+        "x": 6.12,
+        "y": 16.0165,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_5",
+        "kind": "door",
+        "axis": "x",
+        "x": 1.345,
+        "y": 19.32,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_6",
+        "kind": "door",
+        "axis": "y",
+        "x": 7.92,
+        "y": 1.477,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "door_7",
+        "kind": "door",
+        "axis": "x",
+        "x": 13.632,
+        "y": 7.0,
+        "width": 0.9,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": false
+      },
+      {
+        "id": "entrance",
+        "kind": "door",
+        "axis": "x",
+        "x": 7.02,
+        "y": 0.0,
+        "width": 1.0,
+        "bottom": 0.0,
+        "height": 2.2,
+        "entrance": true
+      },
+      {
+        "id": "window_9",
+        "kind": "window",
+        "axis": "y",
+        "x": 0.0,
+        "y": 6.1256,
+        "width": 6.0,
+        "bottom": 0.5,
+        "height": 2.1,
+        "entrance": false
+      },
+      {
+        "id": "window_10",
+        "kind": "window",
+        "axis": "y",
+        "x": 0.0,
+        "y": 13.5912,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "window_11",
+        "kind": "window",
+        "axis": "y",
+        "x": 0.0,
+        "y": 17.1256,
+        "width": 3.0722,
+        "bottom": 0.5,
+        "height": 2.1,
+        "entrance": false
+      },
+      {
+        "id": "window_12",
+        "kind": "window",
+        "axis": "x",
+        "x": 3.06,
+        "y": 22.0,
+        "width": 2.0,
+        "bottom": 0.85,
+        "height": 1.35,
+        "entrance": false
+      },
+      {
+        "id": "window_13",
+        "kind": "window",
+        "axis": "x",
+        "x": 9.61,
+        "y": 0.0,
+        "width": 2.366,
+        "bottom": 0.5,
+        "height": 2.1,
+        "entrance": false
+      },
+      {
+        "id": "window_14",
+        "kind": "window",
+        "axis": "x",
+        "x": 17.65,
+        "y": 0.0,
+        "width": 6.0,
+        "bottom": 0.5,
+        "height": 2.1,
+        "entrance": false
+      }
+    ],
+    "furniture": [
+      {
+        "design_variant": 1,
+        "id": "bed1_f1",
+        "room_id": "bed1",
+        "kind": "bed",
+        "x": 1.0,
+        "y": 1.2,
+        "width": 1.6,
+        "depth": 2.0,
+        "height": 0.65,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "design_variant": 2,
+        "id": "bed1_f2",
+        "room_id": "bed1",
+        "kind": "wardrobe",
+        "x": 0.8,
+        "y": 3.3128,
+        "width": 1.2,
+        "depth": 0.6,
+        "height": 2.1,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.42,
+          "g": 0.19,
+          "b": 0.09
+        }
+      },
+      {
+        "design_variant": 0,
+        "id": "bath1_f1",
+        "room_id": "bath1",
+        "kind": "shower",
+        "x": 0.65,
+        "y": 13.7637,
+        "width": 0.9,
+        "depth": 0.9,
+        "height": 0.08,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "design_variant": 1,
+        "id": "bath1_f2",
+        "room_id": "bath1",
+        "kind": "toilet",
+        "x": 0.45,
+        "y": 12.8012,
+        "width": 0.5,
+        "depth": 0.7,
+        "height": 0.75,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "design_variant": 2,
+        "id": "bath1_f3",
+        "room_id": "bath1",
+        "kind": "basin",
+        "x": 2.42,
+        "y": 12.7012,
+        "width": 0.6,
+        "depth": 0.5,
+        "height": 0.85,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "design_variant": 0,
+        "id": "bed2_f1",
+        "room_id": "bed2",
+        "kind": "bed",
+        "x": 1.0,
+        "y": 16.1312,
+        "width": 1.6,
+        "depth": 2.0,
+        "height": 0.65,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "design_variant": 1,
+        "id": "bed2_f2",
+        "room_id": "bed2",
+        "kind": "wardrobe",
+        "x": 0.8,
+        "y": 17.5492,
+        "width": 1.2,
+        "depth": 0.6,
+        "height": 2.1,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.42,
+          "g": 0.19,
+          "b": 0.09
+        }
+      },
+      {
+        "design_variant": 2,
+        "id": "bath2_f1",
+        "room_id": "bath2",
+        "kind": "shower",
+        "x": 0.65,
+        "y": 20.8325,
+        "width": 0.9,
+        "depth": 0.9,
+        "height": 0.08,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "design_variant": 0,
+        "id": "bath2_f2",
+        "room_id": "bath2",
+        "kind": "toilet",
+        "x": 0.45,
+        "y": 19.87,
+        "width": 0.5,
+        "depth": 0.7,
+        "height": 0.75,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "design_variant": 1,
+        "id": "bath2_f3",
+        "room_id": "bath2",
+        "kind": "basin",
+        "x": 1.78,
+        "y": 21.55,
+        "width": 0.6,
+        "depth": 0.5,
+        "height": 0.85,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.9,
+          "g": 0.9,
+          "b": 0.87
+        }
+      },
+      {
+        "design_variant": 2,
+        "id": "kitchen_f1",
+        "room_id": "kitchen",
+        "kind": "table",
+        "x": 9.61,
+        "y": 3.5,
+        "width": 1.0,
+        "depth": 1.3,
+        "height": 0.75,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "design_variant": 0,
+        "id": "kitchen_f2",
+        "room_id": "kitchen",
+        "kind": "kitchen",
+        "x": 9.12,
+        "y": 0.5,
+        "width": 2.0,
+        "depth": 0.6,
+        "height": 0.9,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.42,
+          "g": 0.19,
+          "b": 0.09
+        }
+      },
+      {
+        "design_variant": 1,
+        "id": "living_f1",
+        "room_id": "living",
+        "kind": "sofa",
+        "x": 11.95,
+        "y": 1.2,
+        "width": 0.9,
+        "depth": 2.0,
+        "height": 0.85,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "design_variant": 2,
+        "id": "living_f2",
+        "room_id": "living",
+        "kind": "sofa",
+        "x": 11.95,
+        "y": 3.5,
+        "width": 0.9,
+        "depth": 2.0,
+        "height": 0.85,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "design_variant": 0,
+        "id": "living_f3",
+        "room_id": "living",
+        "kind": "table",
+        "x": 17.65,
+        "y": 3.5,
+        "width": 1.0,
+        "depth": 1.3,
+        "height": 0.75,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "design_variant": 1,
+        "id": "living_f4",
+        "room_id": "living",
+        "kind": "chair",
+        "x": 11.75,
+        "y": 5.025,
+        "width": 0.5,
+        "depth": 0.5,
+        "height": 0.8,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      },
+      {
+        "design_variant": 2,
+        "id": "living_f5",
+        "room_id": "living",
+        "kind": "chair",
+        "x": 11.75,
+        "y": 5.7875,
+        "width": 0.5,
+        "depth": 0.5,
+        "height": 0.8,
+        "rotation_deg": 0.0,
+        "color": {
+          "r": 0.65,
+          "g": 0.27,
+          "b": 0.13
+        }
+      }
+    ],
+    "shape": "L",
+    "courtyard_corner": "rear-right",
+    "layout_variant": 217,
+    "storeys": 1,
+    "storey_height": 3.45,
+    "upper_floors": [],
+    "vertical_core": null,
+    "site": null,
+    "access_roots": []
+  },
+  "edits": {},
+  "prompt": "L-shaped copper-and-ivory courtyard villa; portal entrance, pergola, generous rooms and hard minimum usable room sizes."
+}

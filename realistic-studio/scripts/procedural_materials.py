@@ -35,6 +35,7 @@ def ensure_maps(directory,finish,roughness=0.6,size=256):
                 value=0.65 if vein<0.045 else 0.94+0.03*noise
             elif finish=='linen':value=0.78+0.08*math.sin(x*math.pi/2)*math.sin(y*math.pi/2)+0.05*noise
             elif finish=='leather':value=0.79+0.13*noise
+            elif finish=='terracotta':value=0.68 if x<2 or y<2 else 0.87+0.08*noise
             elif finish=='ceramic':value=0.56 if x<3 or y<3 else 0.94+0.025*noise
             elif finish=='concrete':value=0.79+0.13*noise+0.04*math.sin(u*math.tau*4)*math.cos(v*math.tau*3)
             else:value=0.9+0.06*noise

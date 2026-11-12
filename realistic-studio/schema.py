@@ -28,8 +28,10 @@ class Color(Data):
     g: float
     b: float
 
+MaterialKind = Literal['plain','oak','walnut','stone','marble','concrete','linen','leather','plaster','ceramic','terracotta']
+
 class MaterialFinish(Data):
-    finish: Literal['plain','oak','walnut','stone','marble','concrete','linen','leather','plaster','ceramic'] | None = None
+    finish: MaterialKind | None = None
     color: Color | None = None
     roughness: float | None = Field(default=None, ge=0.05, le=1.0)
     repeat_m: float | None = Field(default=None, ge=0.1, le=10.0)
@@ -41,6 +43,22 @@ class MaterialPalette(Data):
     curtain: MaterialFinish | None = None
     floor: MaterialFinish | None = None
     wall: MaterialFinish | None = None
+
+class Architecture(Data):
+    """Prompt-controlled exterior geometry, independent of the floor-plan shape."""
+    entrance_style: Literal['canopy', 'portal', 'pergola'] = 'portal'
+    porch_width: float = Field(default=4.4, ge=2.0, le=8.0)
+    porch_depth: float = Field(default=2.2, ge=0.8, le=3.5)
+    roof_overhang: float = Field(default=0.45, ge=0.12, le=0.9)
+    parapet_profile: Literal['level', 'stepped'] = 'stepped'
+    facade_panels: bool = True
+    screens: bool = True
+    screen_spacing: float = Field(default=0.22, ge=0.12, le=0.6)
+    pergola: bool = False
+    landscape_density: Literal['minimal', 'balanced', 'lush'] = 'balanced'
+    window_ratio: float = Field(default=0.6, ge=0.25, le=0.8)
+    window_height: float = Field(default=2.0, ge=1.0, le=2.5)
+    window_sill: float = Field(default=0.55, ge=0.3, le=1.2)
 
 class Room(Data):
     materials: MaterialPalette | None = None
@@ -113,6 +131,7 @@ class SitePlan(SiteRect):
     pool: SiteRect | None = None
 
 class Scene(Data):
+    architecture: Architecture | None = None
     materials: MaterialPalette | None = None
     interior_style: InteriorStyle = 'modern'
     width: float

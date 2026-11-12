@@ -1,7 +1,8 @@
 """Small provider contract: semantic requirements, never mesh coordinates."""
-from typing import Literal
+from typing import Literal, get_args
+from PIL import ImageColor
 from pydantic import Field, model_validator, field_validator
-from schema import Data, Color, Response, InteriorStyle, MaterialPalette
+from schema import Data, Color, Response, InteriorStyle, MaterialPalette, Architecture, MaterialKind
 FurnitureKind = Literal['bed', 'sofa', 'table', 'chair', 'kitchen', 'wardrobe', 'toilet', 'basin', 'shower', 'plant', 'box', 'cylinder', 'treadmill', 'exercise_bike', 'weight_rack', 'bench', 'car']
 # Provider vocabulary is normalized before the strict scene contract is applied.
 FURNITURE_ALIASES = {
@@ -19,18 +20,96 @@ FURNITURE_ALIASES = {
 }
 RoomKind = str
 
-class RoomIntent(Data):
+MATERIAL_FINISHES = set(get_args(MaterialKind))
+MATERIAL_MODIFIERS = {'pale', 'light', 'dark', 'warm', 'muted', 'natural'}
+
+def normalize_material_palette(value):
+    """Repair provider color/finish confusion without relaxing the scene schema."""
+    if not isinstance(value, dict):
+        return value
+    result = dict(value)
+    for role, raw in value.items():
+        if not isinstance(raw, dict) or not isinstance(raw.get('finish'), str):
+            continue
+        spec = dict(raw)
+        text = ' '.join(raw['finish'].strip().lower().replace('_', ' ').replace('-', ' ').split())
+        text = text.replace('terra cotta', 'terracotta')
+        tokens = text.split()
+        finishes = MATERIAL_FINISHES.intersection(tokens)
+        # 'Terracotta stone' means terracotta-colored stone; the standalone
+        # word is also a supported fired-clay material finish.
+        if 'terracotta' in finishes and len(finishes) == 2:
+            finishes.discard('terracotta')
+        color_text = ' '.join(t for t in tokens if t not in finishes and t not in MATERIAL_MODIFIERS)
+        color = None
+        if color_text:
+            try:
+                channels = ImageColor.getrgb({'cream':'#fffdd0', 'terracotta':'#c76b46'}.get(color_text, color_text))
+                if len(channels) == 3:
+                    color = dict(zip(('r', 'g', 'b'), (channel / 255 for channel in channels)))
+            except ValueError:
+                pass
+        # Unknown or ambiguous material names still receive normal validation.
+        if text in MATERIAL_FINISHES:
+            spec['finish'] = text
+        elif len(finishes) == 1 and (not color_text or color is not None):
+            spec['finish'] = next(iter(finishes))
+        elif not finishes and (color is not None or (tokens and set(tokens) <= MATERIAL_MODIFIERS)):
+            spec.pop('finish')  # Role/style resolver supplies the material, not a color enum.
+        else:
+            continue
+        if spec.get('finish') == 'terracotta' and color is None:
+            color = dict(r=199/255, g=107/255, b=70/255)
+        if color is not None and spec.get('color') is None:
+            spec['color'] = color
+        result[role] = spec
+    return result
+
+class MaterialIntent(Data):
+    @field_validator('materials', mode='before', check_fields=False)
+    @classmethod
+    def normalize_provider_materials(cls, value):
+        return normalize_material_palette(value)
+
+class RoomIntent(MaterialIntent):
     materials: MaterialPalette | None = None
     id: str = Field(min_length=1, max_length=40, pattern='^[A-Za-z0-9_-]+$')
     name: str = Field(min_length=1, max_length=60)
     kind: RoomKind = Field(min_length=1,max_length=32)
-    target_area: float = Field(ge=2, le=1500)
+    target_area: float = Field(ge=0, le=1500)
+    minimum_area: float | None = Field(default=None, ge=2, le=1500)
+    minimum_width: float | None = Field(default=None, ge=1.4, le=15)
     zone: Literal['front', 'rear', 'any'] = 'any'
     attached_to: str | None = None
     furniture: list[FurnitureKind] = Field(default_factory=list, max_length=8)
     floor_color: Color | None = None
     interior_style: InteriorStyle | None = None
     furniture_scale: float = Field(default=1.0, ge=0.75, le=1.25)
+
+    @field_validator('kind', mode='before')
+    @classmethod
+    def normalize_circulation_kind(cls, value):
+        if isinstance(value, str):
+            key = '_'.join(value.strip().lower().replace('-', ' ').split())
+            if key in {'hall', 'hallway', 'corridor', 'circulation', 'passage', 'entrance_hall'}:
+                return 'hall'
+        return value
+
+    @field_validator('minimum_area', 'minimum_width', mode='before')
+    @classmethod
+    def normalize_unspecified_minimum(cls, value):
+        # Providers often use 0 instead of null for optional constraints.
+        # Do not accept negatives, booleans or other invalid constraints.
+        if type(value) in (int, float) and value == 0:
+            return None
+        return value
+
+    @model_validator(mode='after')
+    def validate_room_area(self):
+        # Circulation dimensions are computed by hall_record, not target_area.
+        if self.kind != 'hall' and self.target_area < 2:
+            raise ValueError('A usable room needs target_area >= 2 square metres; only circulation may use zero.')
+        return self
 
     @field_validator('furniture', mode='before')
     @classmethod
@@ -57,7 +136,8 @@ class SiteBrief(Data):
     pool_width: float = Field(default=0.0, ge=0)
     pool_depth: float = Field(default=0.0, ge=0)
 
-class DesignBrief(Data):
+class DesignBrief(MaterialIntent):
+    architecture: Architecture | None = None
     materials: MaterialPalette | None = None
     interior_style: InteriorStyle = 'modern'
     width: float = Field(ge=5, le=60)
@@ -171,10 +251,22 @@ Use zone=front for public spaces and rear for bedrooms. Only attached bathrooms 
 attached_to, referencing their bedroom ID. Shared bathrooms have attached_to=null.
 Furniture is a small list of requested kinds, not coordinates: bedroom bed+wardrobe,
 bathroom toilet+basin+shower, living sofa+table, kitchen kitchen. Halls need no furniture.
+Architectural appearance must be represented in architecture, not only described in message.
+For villas or a request for decorative/exterior variation, populate architecture with the requested
+entrance_style (canopy, portal, pergola), porch_width/depth in metres, roof_overhang,
+parapet_profile (level, stepped), facade_panels, screens, screen_spacing, pergola, landscape_density (minimal, balanced, lush),
+window_ratio (opening width relative to its exposed wall), window_height and window_sill.
+Use portal for a prominent framed entrance, pergola for open timber shade, canopy for a thin roof.
+These are parametric elements, not named house templates. Choose dimensions and options to match
+the prompt. Do not repeat the same architecture parameters for materially different requests.
+For a courtyard villa explicitly use shape L or U; leave its courtyard open. Honor an explicitly
+requested rectangular shape. Do not promise unsupported curves, arches or pitched roofs.
+For explicitly spacious rooms supply minimum_width (minimum usable short side) and minimum_area
+in square metres, alongside target_area. These are hard constraints: do not substitute tiny rooms. Omit unspecified minimum_area/minimum_width or use null; do not use zero. Only hall/circulation may have target_area=0 because its actual dimensions are calculated locally. Other room target areas must be at least 2.
 Use materials for global finishes and optional room materials for overrides.
 Roles: wood, upholstery, stone (countertops), curtain, floor, wall. Each role may specify
-finish (plain, oak, walnut, stone, marble, concrete, linen, leather, plaster, ceramic),
-color RGB 0–1, roughness .05–1, repeat_m in metres. Omit unspecified optional material roles/fields and room overrides. Use global specs for shared finishes.
+finish (plain, oak, walnut, stone, marble, concrete, linen, leather, plaster, ceramic, terracotta),
+color RGB 0–1, roughness .05–1, repeat_m in metres. Never put color words (cream, pale, olive, ivory) in finish. For example cream upholstery is {"finish":"linen","color":{"r":1.0,"g":0.992,"b":0.816}}; pale stone uses finish="stone" and a separate light RGB color. Omit unspecified optional material roles/fields and room overrides. Use global specs for shared finishes.
 Explicit color/material requests take priority over style defaults. Do not use a floor override
 for every room if the user requested different bedroom and living floors: use room overrides.
 Choose realistic, distinct finishes from the prompt; do not reuse the example palette.

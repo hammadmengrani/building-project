@@ -39,7 +39,15 @@ def minimum_length(unit, cross):
     clear = cross - 0.18
     if clear < 1.4:
         raise PlanningError('A room strip is too narrow.')
-    return sum((max(1.58, MIN_AREA.get(m.kind,6.) / clear + 0.18, 3.0 if m.kind == 'bedroom' else 0) for m in unit['members']))
+    lengths = []
+    for member in unit['members']:
+        if member.minimum_width and clear < member.minimum_width - 1e-5:
+            raise PlanningError('Requested minimum room width does not fit this wing.')
+        required_area = max(MIN_AREA.get(member.kind, 6.), member.minimum_area or 0.)
+        lengths.append(max(1.58, required_area / clear + 0.18,
+                           (member.minimum_width + 0.18) if member.minimum_width else 0.,
+                           3.0 if member.kind == 'bedroom' else 0.))
+    return sum(lengths)
 
 def allocate(units, length, cross):
     if not units:
@@ -290,6 +298,21 @@ def create_openings(scene, brief, door_bias):
             op.append(max(choices, key=lambda item: item[0])[1])
         elif intent.kind == 'bedroom':
             raise PlanningError('Bedroom lacks a usable exterior window.')
+    if brief.architecture:
+        settings = brief.architecture
+        for window in op:
+            if window['kind'] != 'window':
+                continue
+            room = owners(window, rooms)[0]
+            if room.get('kind') == 'bathroom':
+                continue  # retain bathroom privacy sill and modest openings
+            edge = next(e for e in exposed(room, rooms) if e[0] == window['axis'] and abs(e[1] - (window['y'] if e[0] == 'x' else window['x'])) < .025 and e[2] <= (window['x'] if e[0] == 'x' else window['y']) <= e[3])
+            center = window['x'] if window['axis'] == 'x' else window['y']
+            available = min(center-edge[2], edge[3]-center)*2 - .3
+            trial = dict(window, width=rounded(min(6.0, available, (edge[3]-edge[2])*settings.window_ratio)),
+                         bottom=settings.window_sill, height=min(settings.window_height, room['height']-settings.window_sill-.2))
+            if trial['width'] >= window['width'] and not collide_opening(trial, [o for o in op if o is not window]):
+                window.update(trial)
     scene['openings'] = op
 
 def door_approaches(scene, room):
@@ -376,7 +399,7 @@ def candidate_score(rooms, brief):
     score = 0
     for room in rooms:
         intent = byid.get(room['id'])
-        if not intent:
+        if not intent or intent.kind == 'hall':
             continue
         area = (room['width'] - 0.18) * (room['depth'] - 0.18)
         score += abs(area - intent.target_area) / intent.target_area
@@ -433,7 +456,8 @@ def _compile_single(data, previous=None):
                 return scene
             except PlanningError as exc:
                 failures.append(str(exc))
-    detail = failures[0] if failures else 'Envelope is too small for the requested room counts and shape.'
+    minimums = any(r.minimum_width or r.minimum_area for r in brief.rooms)
+    detail = failures[0] if failures else ('Requested minimum usable room widths/areas do not fit the available wings.' if minimums else 'Envelope is too small for the requested room counts and shape.')
     raise PlanningError('Local planner could not fit this brief. ' + detail + ' No extra Groq request was made.')
 
 def summarize_scene(scene):
@@ -464,7 +488,7 @@ def summarize_scene(scene):
         park=site.get('park')
         pool=site.get('pool')
         site_summary=dict(width=site['width'],depth=site['depth'],parking_spaces=len(site.get('parking',[])),park_area=rounded(park['width']*park['depth']) if park else 0.,pool_width=pool['width'] if pool else 0.,pool_depth=pool['depth'] if pool else 0.)
-    return dict(materials=scene.get('materials'),interior_style=scene.get('interior_style','modern'),storeys=scene.get('storeys',1),lift=bool((scene.get('vertical_core') or {}).get('lift')),site=site_summary,upper_floors=list(groups.values()),shape=scene.get('shape') or shape,courtyard_corner=scene.get('courtyard_corner') or ('rear-right' if left else 'rear-left'),layout_variant=scene.get('layout_variant',0),width=width,depth=depth,wall_color=scene['wall_color'],accent_color=scene['accent_color'],roof_color=scene['roof_color'],rooms=program(scene))
+    return dict(architecture=scene.get('architecture'),materials=scene.get('materials'),interior_style=scene.get('interior_style','modern'),storeys=scene.get('storeys',1),lift=bool((scene.get('vertical_core') or {}).get('lift')),site=site_summary,upper_floors=list(groups.values()),shape=scene.get('shape') or shape,courtyard_corner=scene.get('courtyard_corner') or ('rear-right' if left else 'rear-left'),layout_variant=scene.get('layout_variant',0),width=width,depth=depth,wall_color=scene['wall_color'],accent_color=scene['accent_color'],roof_color=scene['roof_color'],rooms=program(scene))
 
 
 def compile_brief(data, previous=None):
@@ -474,6 +498,7 @@ def compile_brief(data, previous=None):
         result = compile_building(brief, previous)
     else:
         result = _compile_single(brief, previous)
+    result['architecture'] = (brief.architecture.model_dump() if brief.architecture else (previous or {}).get('architecture') if brief.action == 'palette' else None)
     result['interior_style'] = brief.interior_style
     result['materials'] = brief.materials.model_dump(exclude_none=True) if brief.materials else None
     for level, layout in enumerate([result, *result.get('upper_floors', [])]):

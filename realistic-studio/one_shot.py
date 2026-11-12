@@ -38,7 +38,7 @@ Schema: """ + json.dumps(BriefResponse.model_json_schema(), separators=(',', ':'
         packet.message = str(exc)
         return packet
     packet.assumptions.append('Exact geometry, circulation, wall openings and furniture placement calculated locally; no geometry-repair Groq call.')
-    packet.assumptions.append('Room target areas are preferences; circulation may use multiple connected rectangles.')
+    packet.assumptions.append('Room target areas are preferences; explicit minimum usable room widths/areas are enforced. Circulation may use multiple connected rectangles.')
     if reply.brief.storeys > 1:
         packet.assumptions.append('Aligned stairs and floor lobbies are added locally. Unspecified upper-floor programs repeat the ground-floor rooms.')
         packet.assumptions.append(f'Storey spacing: {packet.scene.storey_height:.2f} m including slab; insufficient provider spacing is increased locally to preserve ceiling clearance.')
